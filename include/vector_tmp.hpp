@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 16:15:59 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/02 22:46:46 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/03 00:42:22 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ namespace ft
 	// *	 Class : __vector_base		*
 	// *								*
 	// --*--*--*--*--*--*--*--*--*--*--*-
-	template <typename _Tp, typename _Allocator = std::allocator<_Tp> >
+	template <typename _Tp, typename _Allocator = std::allocator<_Tp>>
 	class __vector_base
 	{
 	public:
@@ -151,7 +151,7 @@ namespace ft
 	// *	 	Class : vector			*
 	// *								*
 	// --*--*--*--*--*--*--*--*--*--*--*-
-	template <typename _Tp, typename _Allocator = std::allocator<_Tp> >
+	template <typename _Tp, typename _Allocator = std::allocator<_Tp>>
 	class vector : private __vector_base<_Tp, _Allocator> // Inherit __vector_base as private
 	{
 	private:
@@ -226,7 +226,7 @@ namespace ft
 	{
 		if (__n > 0)
 		{
-			// __vallocate(__n);												  // 1. allocate
+			__vallocate(__n);												  // 1. allocate
 			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, 0); // 2. construct
 			this->__end_ += __n;
 		}
