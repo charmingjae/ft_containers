@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 16:15:59 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/02 20:38:17 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/02 21:58:36 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@
 #define _NOEXCEPT throw() // Should I define _NOEXCEPT and _NOEXCEPT_(x)? 2022. 08. 02
 
 // --*-- Include --*--
-#include <memory> // Allocator
-#include <limits> // numeric_limits
+#include <memory>	 // Allocator
+#include <limits>	 // numeric_limits
+#include <stdexcept> // standard exception
+#include <algorithm> // std::min
 
 // --*-- namespace ft --*--
 namespace ft
@@ -177,18 +179,36 @@ namespace ft
 		bool empty() const _NOEXCEPT { return this->__begin_ == this->__end_; }
 		allocator_type get_allocator() const _NOEXCEPT { return this->__alloc_; }
 		size_type size() const _NOEXCEPT { return static_cast<size_type>(this->__end_ - this->__begin_); }
+
+	private:
+		// --*-- private member function --*--
+		// * Prototype
+		void __vallocate(size_type __n);
+		void __throw_length_error(const char *__msg) const;
 	};
 
 	// --*-- Constructor & Destructor implementation --*--
 	// * 00. Basic constructor
 	template <typename _Tp, typename _Allocator>
-	vector<_Tp, _Allocator>::vector() _NOEXCEPT {}
+	vector<_Tp, _Allocator>::vector() _NOEXCEPT : __vector_base<_Tp, _Allocator>() {}
 
 	// * 01. Allocator with parameter
 	template <typename _Tp, typename _Allocator>
 	vector<_Tp, _Allocator>::vector(const allocator_type &__a) _NOEXCEPT : __base(__a) {}
 
-	// * 02. Destructor
+	// * 02. Allocator with size_type __n
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::vector(size_type __n)
+	{
+		if (__n > 0)
+		{
+			__vallocate(__n);												  // 1. allocate
+			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, 0); // 2. construct
+			this->__end_ += __n;
+		}
+	}
+
+	// * 0?. Destructor
 	template <typename _Tp, typename _Allocator>
 	vector<_Tp, _Allocator>::~vector()
 	{ // use __vector_base destructor
@@ -199,7 +219,26 @@ namespace ft
 	template <typename _Tp, typename _Allocator>
 	typename vector<_Tp, _Allocator>::size_type vector<_Tp, _Allocator>::max_size() const _NOEXCEPT
 	{
-		return static_cast<size_type>(std::min(this->__alloc_.max_size(), std::numeric_limits<difference_type>::max()));
+		return static_cast<size_type>(std::min(this->__alloc_.max_size(), static_cast<unsigned long>(std::numeric_limits<difference_type>::max())));
+	}
+
+	// * 01. Implementation -> __vallocate()
+	// * Allocate n elements as value 0
+	template <typename _Tp, typename _Allocator>
+	void vector<_Tp, _Allocator>::__vallocate(size_type __n)
+	{
+		if (__n > max_size())										  // 1. Check param __n is bigger than max_size
+			this->__throw_length_error("vector : __n is too big");	  // 1-1. if __n is bigger than max_size, throw()
+		this->__begin_ = this->__end_ = this->__alloc_.allocate(__n); // 2. Allocate n size
+		this->__end_cap_ = this->__begin_ + __n;					  // 3. Set end capacity
+	}
+
+	// * 02. Implementation -> __throw_length_error()
+	// * Handling throw exception
+	template <typename _Tp, typename _Allocator>
+	void vector<_Tp, _Allocator>::__throw_length_error(const char *__msg) const
+	{
+		throw std::length_error(__msg);
 	}
 
 } // namespace ft
