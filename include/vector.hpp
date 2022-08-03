@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/03 00:42:36 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/03 14:51:08 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,9 @@ namespace ft
 
 		// --*-- Utility function --*--
 		void __destruct_at_end(pointer __new_last) _NOEXCEPT; // destory vector element from at the end of the vector
+
+		// --*-- Throw function --*--
+		void __throw_length_error(const char *__msg) const;
 	};
 
 	// --*-- Constructor & Destructor implementation --*--
@@ -92,8 +95,55 @@ namespace ft
 	template <typename _Tp, typename _Allocator>
 	__vector_base<_Tp, _Allocator>::__vector_base(size_type __n)
 	{
-		// 1. allocate
-		// 2. set point
+		if (__n > max_size())
+			this->__throw_length_error("vector : size __n is too big");
+		this->__begin_ = this->__end_ = this->__alloc_.allocate(__n); // 1. allocate and set begin, end
+		this->__end_cap_ = this->__begin_ + __n;					  // 2. set point
+	}
+
+	// * Destructor
+	template <typename _Tp, typename _Allocator>
+	__vector_base<_Tp, _Allocator>::~__vector_base()
+	{
+		if (this->__begin_ != nullptr)
+		{
+			clear();
+			this->__alloc_.deallocate(this->__begin_, capacity());
+		}
+	}
+
+	// --*-- Member function implementation --*--
+	template <typename _Tp, typename _Allocator>
+	void __vector_base<_Tp, _Allocator>::clear(void) _NOEXCEPT
+	{
+		__destruct_at_end(this->__begin_);
+	}
+
+	template <typename _Tp, typename _Allocator>
+	typename __vector_base<_Tp, _Allocator>::size_type __vector_base<_Tp, _Allocator>::max_size() const _NOEXCEPT
+	{
+		return static_cast<size_type>(std::min(this->_alloc_.max_size(), std::numeric_limits<difference_type>::max()));
+		// return static_cast<size_type>(std::min(this->_alloc_.max_size(), static_cast<unsigned long>(std::numeric_limits<difference_type>::max())));
+	}
+
+	// --*-- Utility function implementation --*--
+	template <typename _Tp, typename _Allocator>
+	void __vector_base<_Tp, _Allocator>::__destruct_at_end(pointer __new_last) _NOEXCEPT
+	{
+		pointer __soon_to_be_end = __end_;
+		while (__new_last != __soon_to_be_end)
+		{
+			--__soon_to_be_end;
+			this->__alloc_.destroy(__soon_to_be_end);
+		}
+		__end_ = __new_last;
+	}
+
+	// --*-- Throw function implementation --*--
+	template <typename _Tp, typename _Allocator>
+	void __vector_base<_Tp, _Allocator>::__throw_length_error(const char *__msg) const
+	{
+		throw std::length_error(__msg);
 	}
 
 } // namespace ft
