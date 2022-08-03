@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/03 14:51:08 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/03 15:34:46 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,11 @@
 
 namespace ft
 {
-	//	--*--
+	// --*--*--*--*--*--*--*--*--*--*--*-
 	//	*
-	//	*  __vector_base
+	//	*  		__vector_base
 	//	*
-	//	--*--
+	// --*--*--*--*--*--*--*--*--*--*--*-
 	template <typename _Tp, typename _Allocator = std::allocator<_Tp> >
 	class __vector_base
 	{
@@ -144,6 +144,52 @@ namespace ft
 	void __vector_base<_Tp, _Allocator>::__throw_length_error(const char *__msg) const
 	{
 		throw std::length_error(__msg);
+	}
+
+	// --*--*--*--*--*--*--*--*--*--*--*-
+	//	*
+	//	*  			vector
+	//	*
+	// --*--*--*--*--*--*--*--*--*--*--*-
+	template <typename _Tp, typename _Allocator = std::allocator<_Tp> >
+	class vector : private __vector_base<_Tp, _Allocator> // Inherit __vector_base
+	{
+	private:
+		// --*-- private typedef --*--
+		typedef __vector_base<_Tp, _Allocator> __base;
+		typedef std::allocator<_Tp> __default_allocator_type;
+
+	public:
+		// --*-- public typedef --*--
+		typedef vector __self;									  // my self
+		typedef _Tp value_type;									  // template parameter value type
+		typedef _Allocator allocator_type;						  // template parameter allocator type = Allocator
+		typedef typename __base::reference reference;			  // base reference type
+		typedef typename __base::const_reference const_reference; // base reference type
+		typedef typename __base::size_type size_type;			  // size
+		typedef typename __base::difference_type difference_type; // pointer gap
+		typedef typename __base::pointer pointer;				  // pointer
+		typedef typename __base::const_pointer const_pointer;	  // const pointer
+
+		// --*-- vector class constructor & destructor --*--
+		vector() _NOEXCEPT;
+		explicit vector(const allocator_type &__a) _NOEXCEPT;
+		explicit vector(const size_type __n);
+		~vector();
+
+		// --*-- Member function --*--
+		size_type max_size(void) const _NOEXCEPT;
+		// * Implementation
+		size_type capacity(void) const _NOEXCEPT { return __base::capacity(); }
+		bool empty(void) const _NOEXCEPT { return this->__begin_ == this->__end_; }
+		allocator_type get_allocator(void) const _NOEXCEPT { return this->__alloc_; }
+		size_type size(void) const _NOEXCEPT { return static_cast<size_type>(this->__end_ - this->__begin_); }
+	};
+
+	// --*-- vector constructor & destructor implementation --*--
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::vector() _NOEXCEPT : __base()
+	{
 	}
 
 } // namespace ft
