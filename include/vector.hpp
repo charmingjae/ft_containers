@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/03 15:34:46 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/04 21:43:28 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,11 @@ namespace ft
 		allocator_type __alloc_; // Allocator keep in current vector
 
 		// --*-- __vector_base constructor & destructor --*--
-		__vector_base() _NOEXCEPT;				  // Basic constructor
-		__vector_base(const allocator_type &__a); // With allocator type
-		__vector_base(size_type __n);			  // With size
-		~__vector_base();						  // Destructor
+		__vector_base() _NOEXCEPT;									   // Basic constructor
+		__vector_base(const allocator_type &__a);					   // With allocator type
+		__vector_base(const size_type __n);							   // With size
+		__vector_base(const size_type __n, const allocator_type &__a); // With size and allocator type
+		~__vector_base();											   // Destructor
 
 		// --*-- Member function --*--
 		void clear(void) _NOEXCEPT;
@@ -73,6 +74,7 @@ namespace ft
 
 		// --*-- Utility function --*--
 		void __destruct_at_end(pointer __new_last) _NOEXCEPT; // destory vector element from at the end of the vector
+		void __allocate_memory(size_type __n);
 
 		// --*-- Throw function --*--
 		void __throw_length_error(const char *__msg) const;
@@ -93,12 +95,16 @@ namespace ft
 
 	// * With size
 	template <typename _Tp, typename _Allocator>
-	__vector_base<_Tp, _Allocator>::__vector_base(size_type __n)
+	__vector_base<_Tp, _Allocator>::__vector_base(const size_type __n) : __begin_(nullptr), __end_(nullptr), __end_cap_(nullptr), __alloc_(std::allocator<_Tp>())
 	{
-		if (__n > max_size())
-			this->__throw_length_error("vector : size __n is too big");
-		this->__begin_ = this->__end_ = this->__alloc_.allocate(__n); // 1. allocate and set begin, end
-		this->__end_cap_ = this->__begin_ + __n;					  // 2. set point
+		__allocate_memory(__n);
+	}
+
+	// * With size and allocator type
+	template <typename _Tp, typename _Allocator>
+	__vector_base<_Tp, _Allocator>::__vector_base(const size_type __n, const allocator_type &__a) : __begin_(nullptr), __end_(nullptr), __end_cap_(nullptr), __alloc_(__a)
+	{
+		__allocate_memory(__n);
 	}
 
 	// * Destructor
@@ -122,8 +128,7 @@ namespace ft
 	template <typename _Tp, typename _Allocator>
 	typename __vector_base<_Tp, _Allocator>::size_type __vector_base<_Tp, _Allocator>::max_size() const _NOEXCEPT
 	{
-		return static_cast<size_type>(std::min(this->_alloc_.max_size(), std::numeric_limits<difference_type>::max()));
-		// return static_cast<size_type>(std::min(this->_alloc_.max_size(), static_cast<unsigned long>(std::numeric_limits<difference_type>::max())));
+		return static_cast<size_type>(std::min(this->__alloc_.max_size(), static_cast<unsigned long>(std::numeric_limits<difference_type>::max())));
 	}
 
 	// --*-- Utility function implementation --*--
@@ -137,6 +142,15 @@ namespace ft
 			this->__alloc_.destroy(__soon_to_be_end);
 		}
 		__end_ = __new_last;
+	}
+
+	template <typename _Tp, typename _Allocator>
+	void __vector_base<_Tp, _Allocator>::__allocate_memory(size_type __n)
+	{
+		if (__n > max_size())
+			this->__throw_length_error("vector : size __n is too big");
+		this->__begin_ = this->__end_ = this->__alloc_.allocate(__n); // 1. allocate and set begin, end
+		this->__end_cap_ = this->__begin_ + __n;					  // 2. set point
 	}
 
 	// --*-- Throw function implementation --*--
@@ -175,6 +189,8 @@ namespace ft
 		vector() _NOEXCEPT;
 		explicit vector(const allocator_type &__a) _NOEXCEPT;
 		explicit vector(const size_type __n);
+		vector(const size_type __n, const value_type &__x);
+		vector(const size_type __n, const value_type &__x, const allocator_type &__a);
 		~vector();
 
 		// --*-- Member function --*--
@@ -190,6 +206,56 @@ namespace ft
 	template <typename _Tp, typename _Allocator>
 	vector<_Tp, _Allocator>::vector() _NOEXCEPT : __base()
 	{
+	}
+
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::vector(const allocator_type &__a) _NOEXCEPT : __base(__a)
+	{
+	}
+
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::vector(const size_type __n) : __base(__n)
+	{
+		if (__n > 0)
+		{
+			// Memory is already allocated at __base(__n)
+			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, value_type());
+			this->__end_ += __n;
+		}
+	}
+
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::vector(const size_type __n, const value_type &__x) : __base(__n)
+	{
+		if (__n > 0)
+		{
+			// Memory is already allocated at __base(__n)
+			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, __x);
+			this->__end_ += __n;
+		}
+	}
+
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::vector(const size_type __n, const value_type &__x, const allocator_type &__a) : __base(__n, __a)
+	{
+		if (__n > 0)
+		{
+			// Memory is already allocated at __base(__n)
+			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, __x);
+			this->__end_ += __n;
+		}
+	}
+
+	template <typename _Tp, typename _Allocator>
+	vector<_Tp, _Allocator>::~vector()
+	{
+	}
+
+	// --*-- Member function implementation --*--
+	template <typename _Tp, typename _Allocator>
+	typename vector<_Tp, _Allocator>::size_type vector<_Tp, _Allocator>::max_size(void) const _NOEXCEPT
+	{
+		return __base::max_size();
 	}
 
 } // namespace ft
