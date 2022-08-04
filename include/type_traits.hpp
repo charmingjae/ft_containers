@@ -6,12 +6,12 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:47:18 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/04 18:10:52 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/04 22:41:09 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TYPE_TRAITS
-#define TYPE_TRAITS
+#ifndef TYPE_TRAITS_HPP
+#define TYPE_TRAITS_HPP
 
 namespace ft
 {

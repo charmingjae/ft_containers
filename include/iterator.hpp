@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:40:29 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/04 21:41:18 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/04 22:41:24 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,9 @@ namespace ft
 			char __lx;
 			char __lxx;
 		};
-		template <class _Up>
+		template <typename _Up>
 		static __two __test(...);
-		template <class _Up>
+		template <typename _Up>
 		static char __test(typename ft::__void_t<typename _Up::iterator_category>::type * = 0,
 						   typename ft::__void_t<typename _Up::difference_type>::type * = 0,
 						   typename ft::__void_t<typename _Up::value_type>::type * = 0,
@@ -331,49 +331,49 @@ namespace ft
 	}
 
 	// --*-- Common operation --*--
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator==(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() == __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator<(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() > __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator!=(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() != __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator>(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() < __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator>=(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() <= __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator<=(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() >= __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	typename reverse_iterator<_Iter1>::difference_type operator-(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __y.base() - __x.base();
 	}
 
-	template <class _Iter>
+	template <typename _Iter>
 	reverse_iterator<_Iter> operator+(typename reverse_iterator<_Iter>::difference_type __n, const reverse_iterator<_Iter> &__x)
 	{
 		return reverse_iterator<_Iter>(__x.base() - __n);
