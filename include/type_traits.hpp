@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:47:18 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/04 22:41:09 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/05 14:48:55 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,16 @@ namespace ft
 	};
 
 	// __void_t
-	template <class>
+	template <typename>
 	struct __void_t
 	{
 		typedef void type;
+	};
+
+	// is_convertible
+	template <typename _T1, typename _T2>
+	struct is_convertible : public integral_constant<bool, __is_convertible_to(_T1, _T2)>
+	{
 	};
 }
 
