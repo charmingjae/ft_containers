@@ -6,15 +6,32 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:47:18 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/05 14:48:55 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/08 15:57:19 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPE_TRAITS_HPP
 #define TYPE_TRAITS_HPP
 
+// --*-- Define in type_traits --*--
+#define _NOEXCEPT throw()
+
 namespace ft
 {
+	// integral_constant
+	template <typename _Tp, _Tp __v>
+	struct integral_constant
+	{
+		static const _Tp value = __v; // constexpr
+		typedef _Tp value_type;
+		typedef integral_constant type;
+		operator value_type() const _NOEXCEPT { return value; } // constexpr
+	};
+
+	// true_type , false_type
+	typedef integral_constant<bool, true> true_type;
+	typedef integral_constant<bool, false> false_type;
+
 	// enable_if
 	template <bool Cond, typename T = void>
 	struct enable_if
@@ -27,32 +44,20 @@ namespace ft
 		typedef T type;
 	};
 
-	// integral constant
-	template <typename T, T v>
-	struct integral_constant
-	{
-		static const T value = v;
-		typedef T value_type;
-		typedef integral_constant<T, value> type;
-		operator value_type() const { return value; } // constexpr -> const
-	};
-
-	typedef integral_constant<bool, true> true_type;
-	typedef integral_constant<bool, false> false_type;
-
 	// is_same
-	template <typename T, typename U>
+	// -> Primary template
+	template <typename _Tp, typename _Up>
 	struct is_same : public false_type
 	{
 	};
 
-	template <typename T>
-	struct is_same<T, T> : public true_type
+	// -> Specialization template
+	template <typename _Tp>
+	struct is_same<_Tp, _Tp> : public true_type
 	{
 	};
 
 	// remove_const
-
 	template <typename _Tp>
 	struct remove_const
 	{
@@ -70,7 +75,6 @@ namespace ft
 	{
 		typedef _Tp type;
 	};
-
 	template <typename _Tp>
 	struct remove_volatile<volatile _Tp>
 	{
@@ -89,12 +93,6 @@ namespace ft
 	struct __void_t
 	{
 		typedef void type;
-	};
-
-	// is_convertible
-	template <typename _T1, typename _T2>
-	struct is_convertible : public integral_constant<bool, __is_convertible_to(_T1, _T2)>
-	{
 	};
 }
 

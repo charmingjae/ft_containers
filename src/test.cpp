@@ -1,11 +1,11 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include "../include/temp.hpp"
 
 int main(void)
 {
-	std::vector<int> a(7);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
+	temp::__iterator_traits_impl<float> a;
+	std::cout << a.a << std::endl;
 	return (1);
 }

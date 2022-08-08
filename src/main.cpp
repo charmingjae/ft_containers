@@ -6,12 +6,12 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/05 15:03:28 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/08 15:44:24 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
-#include <iterator.hpp>
+#include "iterator.hpp"
 #include <iterator>
 #include "vector.hpp"
 #include <vector>
@@ -27,30 +27,19 @@ void print_std_vector_info(std::vector<_Tp> &a);
 void paper(void)
 {
 	std::vector<int> a;
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-
-	std::cout << std::endl;
 	a.push_back(1);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-
-	std::cout << std::endl;
 	a.push_back(2);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-
-	std::cout << std::endl;
 	a.push_back(3);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-
-	std::cout << std::endl;
 	a.push_back(4);
 	a.push_back(5);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
+	std::vector<int>::iterator it = a.begin();
+	std::cout << "begin" << std::endl;
+	std::cout << *it << std::endl;
+	std::cout << *std::next(it, 100) << std::endl;
+	std::cout << "end" << std::endl;
 }
+
+// --*-- main --*--
 
 int main(void)
 {
@@ -60,6 +49,7 @@ int main(void)
 	return (0);
 }
 
+// --*-- Function --*--
 void test_constructor_with_parameter(void)
 {
 	std::cout << "		test_constructor_with_parameter\n"

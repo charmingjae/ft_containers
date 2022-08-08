@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/05 15:29:49 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/08 15:36:09 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ namespace ft
 
 		// --*-- Throw function --*--
 		void __throw_length_error(const char *__msg) const;
-	};
+	}; // End __vector_base class
 
 	// --*-- Constructor & Destructor implementation --*--
 	// * Basic constructor
@@ -216,7 +216,7 @@ namespace ft
 		__vector_iter(iterator_type __x) _NOEXCEPT : __i(__x)
 		{
 		}
-	};
+	}; // end vector class
 
 	template <typename _Iter>
 	__vector_iter<_Iter>::__vector_iter() _NOEXCEPT
@@ -230,82 +230,6 @@ namespace ft
 	}
 
 	// --*-- Operation implementation --*--
-	template <typename _Iter>
-	typename __vector_iter<_Iter>::reference __vector_iter<_Iter>::operator*() const _NOEXCEPT
-	{
-		return *__i;
-	}
-
-	template <typename _Iter>
-	typename __vector_iter<_Iter>::pointer __vector_iter<_Iter>::operator->() const _NOEXCEPT
-	{
-		// return (pointer)(&(*__i));
-		return __i;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> &__vector_iter<_Iter>::operator++() _NOEXCEPT
-	{
-		++__i;
-		return *this;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> __vector_iter<_Iter>::operator++(int) _NOEXCEPT
-	{
-		__vector_iter __tmp(*this);
-		++(*this);
-		return __tmp;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> &__vector_iter<_Iter>::operator--() _NOEXCEPT
-	{
-		--__i;
-		return *this;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> __vector_iter<_Iter>::operator--(int) _NOEXCEPT
-	{
-		__vector_iter __tmp(*this);
-		--(*this);
-		return __tmp;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> __vector_iter<_Iter>::operator+(difference_type __n) const _NOEXCEPT
-	{
-		__vector_iter __w(*this);
-		__w += __n;
-		return __w;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> &__vector_iter<_Iter>::operator+=(difference_type __n) _NOEXCEPT
-	{
-		__i += __n;
-		return *this;
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> __vector_iter<_Iter>::operator-(difference_type __n) const _NOEXCEPT
-	{
-		return *this + (-__n);
-	}
-
-	template <typename _Iter>
-	__vector_iter<_Iter> &__vector_iter<_Iter>::operator-=(difference_type __n) _NOEXCEPT
-	{
-		*this += -__n;
-		return *this;
-	}
-
-	template <typename _Iter>
-	typename __vector_iter<_Iter>::reference __vector_iter<_Iter>::operator[](difference_type __n) const _NOEXCEPT
-	{
-		return __i[__n];
-	}
 
 	// --*--*--*--*--*--*--*--*--*--*--*-
 	//	*
@@ -322,19 +246,15 @@ namespace ft
 
 	public:
 		// --*-- public typedef --*--
-		typedef vector __self;												 // my self
-		typedef _Tp value_type;												 // template parameter value type
-		typedef _Allocator allocator_type;									 // template parameter allocator type = Allocator
-		typedef typename __base::reference reference;						 // base reference type
-		typedef typename __base::const_reference const_reference;			 // base reference type
-		typedef typename __base::size_type size_type;						 // size
-		typedef typename __base::difference_type difference_type;			 // pointer gap
-		typedef typename __base::pointer pointer;							 // pointer
-		typedef typename __base::const_pointer const_pointer;				 // const pointer
-		typedef __vector_iter<pointer> iterator;							 // iterator
-		typedef __vector_iter<const_pointer> const_iterator;				 // const iterator
-		typedef ft::reverse_iterator<iterator> reverse_iterator;			 // reverse iterator
-		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator; // const reverse iterator
+		typedef vector __self;									  // my self
+		typedef _Tp value_type;									  // template parameter value type
+		typedef _Allocator allocator_type;						  // template parameter allocator type = Allocator
+		typedef typename __base::reference reference;			  // base reference type
+		typedef typename __base::const_reference const_reference; // base reference type
+		typedef typename __base::size_type size_type;			  // size
+		typedef typename __base::difference_type difference_type; // pointer gap
+		typedef typename __base::pointer pointer;				  // pointer
+		typedef typename __base::const_pointer const_pointer;	  // const pointer
 
 		// --*-- vector class constructor & destructor --*--
 		vector() _NOEXCEPT;
@@ -342,14 +262,6 @@ namespace ft
 		explicit vector(const size_type __n);
 		vector(const size_type __n, const value_type &__x);
 		vector(const size_type __n, const value_type &__x, const allocator_type &__a);
-		template <typename _InputIterator>
-		vector(_InputIterator first,
-			   typename enable_if<__is_input_iterator<_InputIterator>::value && !__is_forward_iterator<_InputIterator>::value, _InputIterator>::type last,
-			   const allocator_type &Alloc = allocator_type());
-		template <typename _ForwardIterator>
-		vector(_ForwardIterator first,
-			   typename enable_if<__is_forward_iterator<_ForwardIterator>::value, _ForwardIterator>::type last,
-			   const allocator_type &Alloc = allocator_type());
 		vector(const vector &x);
 		~vector();
 
@@ -375,10 +287,6 @@ namespace ft
 		{
 			return static_cast<size_type>(this->__end_ - this->__begin_);
 		}
-
-	private:
-		void __push_back_slow_path(const_reference __x);
-		void __reallocate(size_type __n);
 	};
 
 	// --*-- vector constructor & destructor implementation --*--
@@ -427,16 +335,6 @@ namespace ft
 	}
 
 	template <typename _Tp, typename _Allocator>
-	template <typename _InputIterator>
-	vector<_Tp, _Allocator>::vector(_InputIterator first,
-									typename enable_if<__is_input_iterator<_InputIterator>::value && !__is_forward_iterator<_InputIterator>::value, _InputIterator>::type last,
-									const allocator_type &Alloc) : __vector_base<_Tp, _Allocator>(Alloc)
-	{
-		(void)first;
-		(void)last;
-	}
-
-	template <typename _Tp, typename _Allocator>
 	vector<_Tp, _Allocator>::~vector()
 	{
 	}
@@ -448,127 +346,7 @@ namespace ft
 		return __base::max_size();
 	}
 
-	template <typename _Tp, typename _Allocator>
-	void vector<_Tp, _Allocator>::__push_back_slow_path(const_reference __x)
-	{
-		// 1. Set new size
-		size_type __cap = capacity();
-		size_type __max_size = max_size();
-		size_type __new_size = capacity() > (__max_size >> 1) ? __max_size : __cap << 1;
-		if (__new_size == 0)
-			__new_size = 1;
-		reserve(__new_size);
-		this->__a_.construct(this->__end_, val);
-		++this->__end_;
-	}
-
-	template <typename _T, typename _Allocator>
-	void vector<_T, _Allocator>::__reallocate(size_type __n)
-	{
-		vector<_T, _Allocator> __tmp(__n);
-		std::uninitialized_copy(this->__begin_, this->__end_, __tmp.__begin_);
-		__tmp.__end_ = __tmp.__begin_ + size();
-		this->__swap_data(__tmp);
-	}
-
-	template <typename _T, typename _Allocator>
-	void vector<_T, _Allocator>::reserve(size_type n)
-	{
-		size_type __new_size = this->__check_length(n);
-		if (__new_size > capacity())
-		{
-			__reallocate(__new_size);
-		}
-	}
-
-	template <typename _Tp, typename _Allocator>
-	void vector<_Tp, _Allocator>::push_back(const_reference __x)
-	{
-		if (this->__end_ != this->__end_cap())
-		{
-			// If size is not full
-			this->__alloc_.construct(this->__end_, __x);
-			this->__end_++;
-		}
-		else
-			__push_back_slow_path(__x);
-	}
-
 	// --*-- NON - MEMBER FUNCTION (friend operation) --*--
-
-	template <class _Iter1, class _Iter2>
-	bool operator==(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return __x.base() == __y.base();
-	}
-
-	template <class _Iter1, class _Iter2>
-	bool operator<(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return __x.base() < __y.base();
-	}
-
-	template <class _Iter1, class _Iter2>
-	bool operator!=(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return !(__x == __y);
-	}
-
-	template <class _Iter1, class _Iter2>
-	bool operator>(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return __y < __x;
-	}
-
-	template <class _Iter1, class _Iter2>
-	bool operator>=(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return !(__x < __y);
-	}
-
-	template <class _Iter1, class _Iter2>
-	bool operator<=(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return !(__y < __x);
-	}
-
-	template <class _Iter1>
-	bool operator!=(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter1> &__y) _NOEXCEPT
-	{
-		return !(__x == __y);
-	}
-
-	template <class _Iter1>
-	bool operator>(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter1> &__y) _NOEXCEPT
-	{
-		return __y < __x;
-	}
-
-	template <class _Iter1>
-	bool operator>=(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter1> &__y) _NOEXCEPT
-	{
-		return !(__x < __y);
-	}
-
-	template <class _Iter1>
-	bool operator<=(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter1> &__y) _NOEXCEPT
-	{
-		return !(__y < __x);
-	}
-
-	template <class _Iter1, class _Iter2>
-	typename __vector_iter<_Iter1>::difference_type operator-(const __vector_iter<_Iter1> &__x, const __vector_iter<_Iter2> &__y) _NOEXCEPT
-	{
-		return __x.base() - __y.base();
-	}
-
-	template <class _Iter>
-	__vector_iter<_Iter> operator+(typename __vector_iter<_Iter>::difference_type __n, __vector_iter<_Iter> __x) _NOEXCEPT
-	{
-		__x += __n;
-		return __x;
-	}
-
 } // namespace ft
 
 #endif
