@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:40:29 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/08 16:03:03 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/08 16:21:27 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,7 @@ namespace ft
 	{
 	};
 
-	// --*-- Iterator operater --*--
+	// --*-- Iterator operator --*--
 	// --*-- advance --*--
 	template <typename _InputIter>
 	void __advance(_InputIter &__i,
@@ -267,14 +267,14 @@ namespace ft
 		return __r;
 	}
 
-	template <class _RandIter>
+	template <typename _RandIter>
 	typename iterator_traits<_RandIter>::difference_type
 	__distance(_RandIter __first, _RandIter __last, random_access_iterator_tag)
 	{
 		return __last - __first;
 	}
 
-	template <class _InputIter>
+	template <typename _InputIter>
 	typename iterator_traits<_InputIter>::difference_type
 	distance(_InputIter __first, _InputIter __last)
 	{
@@ -284,7 +284,7 @@ namespace ft
 	// --*--*--*--*--*--*--*--
 	// 		Reverse iterator
 	// --*--*--*--*--*--*--*--
-	template <class _Iter>
+	template <typename _Iter>
 	class reverse_iterator : public iterator<typename iterator_traits<_Iter>::iterator_category,
 											 typename iterator_traits<_Iter>::value_type,
 											 typename iterator_traits<_Iter>::difference_type,
@@ -307,9 +307,9 @@ namespace ft
 		// --*-- Constructor --*--
 		reverse_iterator() : __t(), current() {}
 		explicit reverse_iterator(_Iter __x) : __t(__x), current(__x) {}
-		template <class _Up>
+		template <typename _Up>
 		reverse_iterator(const reverse_iterator<_Up> &__u) : __t(__u.base()), current(__u.base()) {}
-		template <class _Up>
+		template <typename _Up>
 		reverse_iterator &operator=(const reverse_iterator<_Up> &__u)
 		{
 			__t = current = __u.base();
@@ -361,50 +361,50 @@ namespace ft
 
 	// --*-- Non member function (operator) --*--
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator==(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() == __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator<(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() > __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator!=(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() != __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator>(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() < __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator>=(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() <= __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	bool operator<=(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __x.base() >= __y.base();
 	}
 
-	template <class _Iter1, class _Iter2>
+	template <typename _Iter1, typename _Iter2>
 	typename reverse_iterator<_Iter1>::difference_type
 	operator-(const reverse_iterator<_Iter1> &__x, const reverse_iterator<_Iter2> &__y)
 	{
 		return __y.base() - __x.base();
 	}
 
-	template <class _Iter>
+	template <typename _Iter>
 	reverse_iterator<_Iter>
 	operator+(typename reverse_iterator<_Iter>::difference_type __n, const reverse_iterator<_Iter> &__x)
 	{

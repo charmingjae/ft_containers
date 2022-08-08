@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/08 15:44:24 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/08 20:51:37 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,33 +23,136 @@ template <typename _Tp>
 void print_ft_vector_info(ft::vector<_Tp> &a);
 template <typename _Tp>
 void print_std_vector_info(std::vector<_Tp> &a);
-
-void paper(void)
-{
-	std::vector<int> a;
-	a.push_back(1);
-	a.push_back(2);
-	a.push_back(3);
-	a.push_back(4);
-	a.push_back(5);
-	std::vector<int>::iterator it = a.begin();
-	std::cout << "begin" << std::endl;
-	std::cout << *it << std::endl;
-	std::cout << *std::next(it, 100) << std::endl;
-	std::cout << "end" << std::endl;
-}
+void resize_test(void);
+void my_resize_test(void);
+void reserve_test(void);
+void my_push_back(void);
 
 // --*-- main --*--
 
 int main(void)
 {
-	paper();
+	my_push_back();
+	// reserve_test();
+	// my_resize_test();
+	// resize_test();
 	// test_basic_function();
 	// test_constructor_with_parameter();
 	return (0);
 }
 
 // --*-- Function --*--
+
+void my_push_back(void)
+{
+	ft::vector<int> origin;
+	origin.push_back(10);
+	origin.push_back(10);
+	origin.push_back(10);
+	origin.push_back(10);
+	origin.push_back(10);
+	std::cout << "origin size : " << origin.size() << std::endl;
+	std::cout << "origin init cap : " << origin.capacity() << std::endl;
+
+	std::vector<int> system;
+	system.push_back(10);
+	system.push_back(10);
+	system.push_back(10);
+	system.push_back(10);
+	system.push_back(10);
+	std::cout << "system size : " << system.size() << std::endl;
+	std::cout << "system init cap : " << system.capacity() << std::endl;
+}
+
+void my_resize_test(void)
+{
+	ft::vector<int> my;
+	std::cout << "my size : " << my.size() << std::endl;
+	std::cout << "my init cap : " << my.capacity() << std::endl;
+
+	my.resize(10);
+	std::cout << "after size : " << my.size() << std::endl;
+	std::cout << "after init cap : " << my.capacity() << std::endl;
+}
+
+void my_reserve_test(void)
+{
+	std::vector<int> origin;
+	origin.push_back(1);
+	origin.push_back(2);
+	origin.push_back(3);
+	origin.push_back(4);
+	origin.push_back(5);
+	std::cout << "origin init size : " << origin.size() << std::endl;
+	std::cout << "origin init cap : " << origin.capacity() << std::endl;
+	origin.reserve(20);
+	std::cout << std::endl;
+	std::cout << "origin init size : " << origin.size() << std::endl;
+	std::cout << "origin init cap : " << origin.capacity() << std::endl;
+	std::cout << std::endl;
+
+	std::vector<int>::iterator it = origin.begin();
+	for (; it != origin.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+void reserve_test(void)
+{
+	std::vector<int> origin;
+	origin.push_back(1);
+	origin.push_back(2);
+	origin.push_back(3);
+	origin.push_back(4);
+	origin.push_back(5);
+	std::cout << "origin init size : " << origin.size() << std::endl;
+	std::cout << "origin init cap : " << origin.capacity() << std::endl;
+	origin.reserve(20);
+	std::cout << std::endl;
+	std::cout << "origin init size : " << origin.size() << std::endl;
+	std::cout << "origin init cap : " << origin.capacity() << std::endl;
+	std::cout << std::endl;
+
+	std::vector<int>::iterator it = origin.begin();
+	for (; it != origin.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+void resize_test(void)
+{
+	std::vector<int> origin;
+	origin.push_back(1);
+	origin.push_back(2);
+	origin.push_back(3);
+	origin.push_back(4);
+	origin.push_back(5);
+	std::cout << "origin init size : " << origin.size() << std::endl;
+	std::cout << "origin init cap : " << origin.capacity() << std::endl;
+	std::vector<int>::iterator originIt = origin.begin();
+	for (; originIt != origin.end(); originIt++)
+	{
+		std::cout << *originIt << " ";
+	}
+	std::cout << "\n"
+			  << std::endl;
+	origin.resize(10);
+
+	std::cout << "origin resize size : " << origin.size() << std::endl;
+	std::cout << "origin resize cap : " << origin.capacity() << std::endl;
+	originIt = origin.begin();
+	for (; originIt != origin.end(); originIt++)
+	{
+		std::cout << *originIt << " ";
+	}
+	std::cout << "\n"
+			  << std::endl;
+}
+
 void test_constructor_with_parameter(void)
 {
 	std::cout << "		test_constructor_with_parameter\n"
