@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/09 14:13:08 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/09 23:20:28 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,22 @@ void resize_test(void);
 void my_resize_test(void);
 void reserve_test(void);
 void my_push_back(void);
+void my_iterator_constructor(void);
+void my_assign_test(void);
+void my_insert_test_1(void);
+void my_insert_test_2(void);
+void my_insert_test_3(void);
 
 // --*-- main --*--
 
 int main(void)
 {
-	my_push_back();
+	// my_insert_test_3();
+	// my_insert_test_2();
+	my_insert_test_1();
+	// my_assign_test();
+	// my_iterator_constructor();
+	// my_push_back();
 	// reserve_test();
 	// my_resize_test();
 	// resize_test();
@@ -42,6 +52,125 @@ int main(void)
 }
 
 // --*-- Function --*--
+
+void my_insert_test_3(void)
+{
+	ft::vector<int> a;
+	a.push_back(1);
+	a.push_back(2);
+	a.push_back(3);
+	a.push_back(4);
+	a.push_back(5);
+	a.push_back(6);
+	std::cout << "init size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+
+	ft::vector<int> b;
+	b.push_back(100);
+	b.push_back(100);
+	b.push_back(100);
+
+	a.insert(a.begin() + 1, b.begin(), b.end());
+	std::cout << "after size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+
+	ft::vector<int>::iterator it = a.begin();
+	for (; it != a.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+void my_insert_test_2(void)
+{
+	ft::vector<int> a;
+	a.push_back(1);
+	a.push_back(2);
+	a.push_back(3);
+	a.push_back(4);
+	a.push_back(5);
+	std::cout << "init size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+	a.insert(a.begin() + 1, 100, 9);
+	std::cout << "init size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+}
+
+void my_insert_test_1(void)
+{
+	ft::vector<int> a;
+	a.push_back(1);
+	a.push_back(2);
+	a.push_back(3);
+	a.push_back(4);
+	// a.push_back(5);
+	std::cout << "size : " << a.size() << std::endl;
+	std::cout << "insert result : " << *a.insert(a.begin() + 50, 9) << std::endl;
+	std::cout << "after size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+	ft::vector<int>::iterator it = a.begin();
+	for (; it != a.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+void my_assign_test(void)
+{
+	std::vector<int> a;
+	a.assign(10, 7);
+	std::cout << "size : " << a.size() << " cap : " << a.capacity() << std::endl;
+	std::vector<int>::iterator it = a.begin();
+	for (; it != a.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	// my assign
+	ft::vector<int> b;
+	b.assign(10, 7);
+	std::cout << "my size : " << b.size() << " my cap : " << b.capacity() << std::endl;
+	ft::vector<int>::iterator it2 = b.begin();
+	for (; it2 != b.end(); it2++)
+	{
+		std::cout << *it2 << " ";
+	}
+	std::cout << std::endl;
+}
+
+void my_iterator_constructor(void)
+{
+	// std::vector<int> test;
+	// test.push_back(1);
+	// test.push_back(2);
+	// test.push_back(3);
+	// test.push_back(4);
+	// test.push_back(5);
+	// std::vector<int> b(test.begin(), test.end());
+	// std::cout << "size : " << b.size() << std::endl;
+	// std::cout << "capacity : " << b.capacity() << std::endl;
+	// std::vector<int>::iterator it = b.begin();
+	// for (; it != b.end(); it++)
+	// {
+	// 	std::cout << *it << " ";
+	// }
+	// std::cout << std::endl;
+
+	// ft::vector<int> origin;
+	// origin.push_back(1);
+	// origin.push_back(2);
+	// origin.push_back(3);
+	// origin.push_back(4);
+	// origin.push_back(5);
+
+	// ft::vector<int> c(origin.begin(), origin.end());
+	// std::cout << "size : " << c.size() << std::endl;
+	// std::cout << "capacity : " << c.capacity() << std::endl;
+	// ft::vector<int>::iterator it2 = c.begin();
+	// for (; it2 != c.end(); it2++)
+	// {
+	// 	std::cout << *it2 << " ";
+	// }
+	// std::cout << std::endl;
+}
 
 void my_push_back(void)
 {

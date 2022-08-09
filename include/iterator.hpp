@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:40:29 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/08 16:21:27 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/09 23:12:48 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,13 @@ namespace ft
 	struct __is_iterator<_Iter, false> : public false_type
 	{
 		typedef void category;
+	};
+
+	template <typename _Tp>
+	struct __is_iterator<_Tp *, true> : public true_type
+	{
+		typedef typename iterator_traits<_Tp *>::iterator_category category;
+		// typedef random_access_iterator_tag iterator_category;
 	};
 
 	// --*-- is ... iterator --*--

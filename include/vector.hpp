@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/09 14:13:43 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/09 23:24:18 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ namespace ft
 		~__vector_base();						  // Destructor
 
 		// --*-- Member function --*--
-		void clear(void) _NOEXCEPT;
+		void __clear(void) _NOEXCEPT;
 		size_type max_size(void) const _NOEXCEPT;
 
 		size_type capacity(void) const _NOEXCEPT
@@ -100,12 +100,15 @@ namespace ft
 		void __allocate_memory(size_type __n);
 		void __construct_at_end(size_type __n);
 		void __construct_at_end(size_type __n, const_reference __x);
+		template <typename _ForwardIterator>
+		void __construct_at_end(_ForwardIterator __first, _ForwardIterator __last);
 		void __append(size_type __n);
 		void __append(size_type __n, const_reference __x);
 
 		// --*-- Throw function --*--
 		void __throw_length_error(const char *__msg) const;
 		void __throw_out_of_range(const char *__msg) const;
+
 	}; // End __vector_base class
 
 	// --*-- Constructor & Destructor implementation --*--
@@ -147,14 +150,14 @@ namespace ft
 	{
 		if (this->__begin_ != nullptr)
 		{
-			clear();
+			__clear();
 			this->__alloc_.deallocate(this->__begin_, capacity());
 		}
 	}
 
 	// --*-- Member function implementation --*--
 	template <typename _Tp, typename _Allocator>
-	void __vector_base<_Tp, _Allocator>::clear(void) _NOEXCEPT
+	void __vector_base<_Tp, _Allocator>::__clear(void) _NOEXCEPT
 	{
 		__destruct_at_end(this->__begin_);
 	}
@@ -221,6 +224,13 @@ namespace ft
 		{
 			this->__alloc_.construct(__now_end_, __x);
 		}
+	}
+	template <typename _Tp, typename _Allocator>
+	template <typename _ForwardIterator>
+	void __vector_base<_Tp, _Allocator>::__construct_at_end(_ForwardIterator __first, _ForwardIterator __last)
+	{
+		std::uninitialized_copy(__first, __last, this->__begin_); // check Exception Safety
+		this->__end_ += this->__size();
 	}
 
 	template <typename _Tp, typename _Allocator>
@@ -522,6 +532,7 @@ namespace ft
 		{
 			return this->__begin_ == this->__end_;
 		}
+
 		void reserve(size_type __n)
 		{
 			if (__n > capacity())
@@ -628,25 +639,23 @@ namespace ft
 
 		void push_back(const_reference __x);
 
-		void
-		swap(vector &x)
-		{
-			// tmp
-			pointer tmp_beg = this->__begin_;
-			pointer tmp_end = this->__end_;
-			pointer tmp_cap = this->__end_cap_;
-			allocator_type tmp_all = this->__alloc_;
-			// this
-			this->__begin_ = x.__begin_;
-			this->__end_ = x.__end_;
-			this->__end_cap_ = x.__end_cap_;
-			this->__alloc_ = x.__alloc_;
-			// x
-			x.__begin_ = tmp_beg;
-			x.__end_ = tmp_end;
-			x.__end_cap_ = tmp_cap;
-			x.__alloc_ = tmp_all;
-		}
+		void pop_back();
+
+		// insert
+		iterator insert(iterator position, const value_type &val);
+		void insert(iterator position, size_type n, const value_type &val);
+		template <typename InputIterator>
+		void insert(iterator position, InputIterator first,
+					typename enable_if<__is_input_iterator<InputIterator>::value &&
+										   !__is_forward_iterator<InputIterator>::value,
+									   InputIterator>::type last);
+		template <typename ForwardIterator>
+		void insert(iterator position, ForwardIterator first,
+					typename enable_if<__is_forward_iterator<ForwardIterator>::value,
+									   ForwardIterator>::type last);
+
+		void swap(vector &x);
+
 		void clear();
 	};
 
@@ -662,7 +671,7 @@ namespace ft
 	}
 
 	template <typename _Tp, typename _Allocator>
-	vector<_Tp, _Allocator>::vector(const size_type __n) : __base(__n)
+	vector<_Tp, _Allocator>::vector(const size_type __n) : __base(__n, allocator_type())
 	{
 		if (__n > 0)
 		{
@@ -690,7 +699,8 @@ namespace ft
 		if (__n > 0)
 		{
 			// Memory is already allocated at __base(__n)
-			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, __x);
+			// std::uninitialized_fill(this->__begin_, this->__begin_ + __n, __x);
+			std::uninitialized_fill_n(this->__begin_, __n, __x);
 			this->__end_ += __n;
 		}
 	}
@@ -705,6 +715,22 @@ namespace ft
 	{
 		for (; __first != __last; ++__first)
 			push_back(*__first);
+	}
+
+	template <typename _Tp, typename _Allocator>
+	template <typename _ForwardIterator>
+	vector<_Tp, _Allocator>::vector(_ForwardIterator __first,
+									typename enable_if<__is_forward_iterator<_ForwardIterator>::value,
+													   _ForwardIterator>::type __last,
+									const allocator_type &alloc) : __base(alloc)
+	{
+		size_type __n = static_cast<size_type>(ft::distance(__first, __last));
+		if (__n > 0)
+		{
+			this->__allocate_memory(__n); // allocate memory
+			std::uninitialized_copy(__first, __last, this->__end_);
+			this->__end_ = this->__begin_ + __n;
+		}
 	}
 
 	template <typename _Tp, typename _Allocator>
@@ -740,6 +766,7 @@ namespace ft
 	}
 
 	// --*-- Modifiers --*--
+	// 01. assign
 	template <typename _Tp, typename _Allocator>
 	template <typename _InputIterator>
 	typename enable_if<__is_input_iterator<_InputIterator>::value &&
@@ -754,8 +781,50 @@ namespace ft
 		}
 	}
 
+	template <typename _Tp, typename _Allocator>
+	template <typename _ForwardIterator>
+	typename enable_if<
+		__is_forward_iterator<_ForwardIterator>::value,
+		void>::type
+	vector<_Tp, _Allocator>::assign(_ForwardIterator __first, _ForwardIterator __last)
+	{
+		if (this->__begin_ != nullptr)
+		{
+			clear();
+			this->__alloc_.deallocate(this->__begin_, capacity());
+			this->__begin_ = this->__end_ = this->__end_cap_ = nullptr;
+		}
+		difference_type __ns = ft::distance(__first, __last);
+		const size_t __n = static_cast<size_type>(__ns);
+		if (__n)
+		{
+			vector<_Tp, _Allocator> __tmp_(__n, value_type(), this->__alloc_);
+			__tmp_.__end_ = std::uninitialized_copy(__first, __last, __tmp_.__begin_);
+			swap(__tmp_);
+		}
+	}
+
 	// 02. assign
-	// 03. assign
+	template <typename _Tp, typename _Allocator>
+	void vector<_Tp, _Allocator>::assign(size_type __n, const_reference __u)
+	{
+		if (__n <= capacity()) // No reallocation needed
+		{
+			size_type __s = size(); // get current size
+			std::uninitialized_fill_n(this->__begin_, std::min(__n, __s), __u);
+			if (__n > __s)
+				this->__construct_at_end(__n - __s, __u);
+			else
+				this->__destruct_at_end(this->__begin_ + __n);
+		}
+		else // reallocation needed
+		{
+			this->__alloc_.deallocate(this->__begin_, capacity());
+			this->__allocate_memory(static_cast<size_type>(__n));
+			std::uninitialized_fill(this->__begin_, this->__begin_ + __n, __u);
+			this->__end_ = this->__begin_ + __n;
+		}
+	}
 
 	template <typename _Tp, typename _Allocator>
 	void vector<_Tp, _Allocator>::push_back(const_reference __x)
@@ -781,9 +850,153 @@ namespace ft
 	}
 
 	template <typename _Tp, typename _Allocator>
+	void vector<_Tp, _Allocator>::pop_back(void)
+	{
+		this->__destruct_at_end(this->__end_ - 1);
+	}
+
+	// 01. insert - single element
+	// insert an element in a specific location
+	template <typename _Tp, typename _Allocator>
+	typename vector<_Tp, _Allocator>::iterator vector<_Tp, _Allocator>::insert(iterator position, const value_type &val)
+	{
+		iterator __p = this->__begin_ + (position - begin()); // point
+		if (this->__end_ < this->__end_cap_)
+		{
+			if (__p == this->end())
+			{
+				push_back(val);
+				__p = this->end() - 1;
+			}
+			else // Specific location
+			{
+				pointer __old_last = this->__end_;
+				pointer __p_ = this->__begin_ + (position - begin());
+				while (__old_last != __p_)
+				{
+					this->__alloc_.construct(__old_last, *(__old_last - 1));
+					this->__alloc_.destroy(__old_last - 1);
+					--__old_last;
+				}
+				this->__alloc_.construct(__p_, val);
+				this->__end_++;
+			}
+		}
+		else // reallocation needed
+		{
+			vector<_Tp, _Allocator> __tmp_(this->capacity() + 1, value_type(), this->__alloc_);
+			__tmp_.assign(this->begin(), position);
+			__tmp_.push_back(val);
+			__p = __tmp_.end() - 1;
+			std::cout << "1" << std::endl;
+			for (iterator it = position; it != this->end(); it++)
+			{
+				std::cout << "2" << std::endl;
+				this->__alloc_.construct(__tmp_.__end_++, *it);
+			}
+			std::cout
+				<< "3" << std::endl;
+			swap(__tmp_);
+		}
+		return iterator(__p);
+	}
+
+	// 02. insert - fill
+	template <typename _Tp, typename _Allocator>
+	void vector<_Tp, _Allocator>::insert(iterator position, size_type n, const value_type &val)
+	{
+		difference_type __diff = position - this->begin();
+		if (this->size() + n > this->capacity()) // reallocation needed
+		{
+			reserve(this->size() + n); // reserve
+		}
+		pointer __p = this->__begin_ + __diff;
+		pointer __old_last = this->__end_;
+		while (__old_last != __p)
+		{
+			this->__alloc_.construct(__old_last + n, *(__old_last - 1));
+			this->__alloc_.destroy(__old_last - 1);
+			--__old_last;
+		}
+		std::uninitialized_fill(__p, __p + n, val);
+		this->__end_ = this->__end_ + n;
+	}
+
+	// 03. insert - range
+	template <typename _Tp, typename _Allocator>
+	template <typename InputIterator>
+	void vector<_Tp, _Allocator>::insert(iterator position, InputIterator first,
+										 typename enable_if<__is_input_iterator<InputIterator>::value &&
+																!__is_forward_iterator<InputIterator>::value,
+															InputIterator>::type last)
+	{
+		difference_type __diff = position - this->begin();
+		difference_type __gap = ft::distance(first, last);
+		if (this->size() + __gap > this->capacity())
+		{
+			this->reserve(this->size() + __gap);
+		}
+		pointer __p = this->__begin_ + __diff;
+		pointer __old_last = this->__end_;
+		while (__old_last != __p)
+		{
+			this->__alloc_.construct(__old_last + __gap, *(__old_last - 1));
+			this->__alloc_.destroy(__old_last - 1);
+			--__old_last;
+		}
+		std::uninitialized_copy(first, last, __p);
+		this->__end_ = this->__end_ + __gap;
+	}
+
+	template <typename _Tp, typename _Allocator>
+	template <typename ForwardIterator>
+	void vector<_Tp, _Allocator>::insert(iterator position, ForwardIterator first,
+										 typename enable_if<__is_forward_iterator<ForwardIterator>::value,
+															ForwardIterator>::type last)
+	{
+		difference_type __gap = ft::distance(first, last);
+		difference_type __diff = position - this->begin();
+		if (this->size() + __gap > this->capacity())
+		{
+			this->reserve(this->size() + __gap);
+		}
+		pointer __p = this->__begin_ + __diff;
+		pointer __old_last = this->__end_;
+		while (__old_last != __p)
+		{
+			--__old_last;
+			this->__alloc_.construct(__old_last + __gap, *(__old_last));
+			this->__alloc_.destroy(__old_last);
+		}
+		std::uninitialized_copy(first, last, __p);
+		this->__end_ = this->__end_ + __gap;
+	}
+
+	// swap
+	template <typename _Tp, typename _Allocator>
+	void vector<_Tp, _Allocator>::swap(vector &x)
+	{
+		// tmp
+		pointer tmp_beg = this->__begin_;
+		pointer tmp_end = this->__end_;
+		pointer tmp_cap = this->__end_cap_;
+		allocator_type tmp_all = this->__alloc_;
+		// this
+		this->__begin_ = x.__begin_;
+		this->__end_ = x.__end_;
+		this->__end_cap_ = x.__end_cap_;
+		this->__alloc_ = x.__alloc_;
+		// x
+		x.__begin_ = tmp_beg;
+		x.__end_ = tmp_end;
+		x.__end_cap_ = tmp_cap;
+		x.__alloc_ = tmp_all;
+	}
+
+	template <typename _Tp, typename _Allocator>
 	void vector<_Tp, _Allocator>::clear()
 	{
-		this->clear();
+		this->__clear();
 	}
 
 	// --*-- NON - MEMBER FUNCTION (friend operation) --*--
