@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/08 21:38:29 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/09 14:13:43 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -701,10 +701,10 @@ namespace ft
 									typename enable_if<__is_input_iterator<_InputIterator>::value &&
 														   !__is_forward_iterator<_InputIterator>::value,
 													   _InputIterator>::type __last,
-									const allocator_type &alloc)
+									const allocator_type &alloc) : __base(alloc)
 	{
 		for (; __first != __last; ++__first)
-		// 구현
+			push_back(*__first);
 	}
 
 	template <typename _Tp, typename _Allocator>
@@ -760,20 +760,23 @@ namespace ft
 	template <typename _Tp, typename _Allocator>
 	void vector<_Tp, _Allocator>::push_back(const_reference __x)
 	{
+		// add one element at the end of the vector
 		if (this->__end_ != this->__end_cap_)
 		{
-			// construct one
-			this->__alloc_.construct(this->__end_, __x);
-			++(this->__end_);
+			// No reallocation needed
+			this->__alloc_.construct(this->__end_, __x); // construct one element
+			++this->__end_;								 // set end point
 		}
 		else
 		{
-			size_type __new_size = this->capacity() > (max_size() / 2) ? max_size() : this->capacity() * 2;
+			const size_type __max_size = this->max_size(); // max_size
+			size_type __capacity = this->capacity();	   // capacity
+			size_type __new_size = __capacity > __max_size / 2 ? __max_size : __capacity * 2;
 			if (__new_size == 0)
 				__new_size = 1;
-			reserve(__new_size);
-			this->__alloc_.construct(this->__end_, __x);
-			++this->__end_;
+			reserve(__new_size);						 // request expand vector storage using reserve function
+			this->__alloc_.construct(this->__end_, __x); // construct
+			++this->__end_;								 // set end point
 		}
 	}
 
