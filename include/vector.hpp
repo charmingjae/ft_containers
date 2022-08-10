@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/09 23:24:18 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 15:20:12 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -654,6 +654,9 @@ namespace ft
 					typename enable_if<__is_forward_iterator<ForwardIterator>::value,
 									   ForwardIterator>::type last);
 
+		iterator erase(const_iterator position);
+		iterator erase(iterator first, iterator last);
+
 		void swap(vector &x);
 
 		void clear();
@@ -884,19 +887,22 @@ namespace ft
 		}
 		else // reallocation needed
 		{
-			vector<_Tp, _Allocator> __tmp_(this->capacity() + 1, value_type(), this->__alloc_);
-			__tmp_.assign(this->begin(), position);
-			__tmp_.push_back(val);
-			__p = __tmp_.end() - 1;
-			std::cout << "1" << std::endl;
-			for (iterator it = position; it != this->end(); it++)
+			difference_type __diff = position - this->begin();
+			if (this->size() + 1 > this->capacity()) // reallocation needed
 			{
-				std::cout << "2" << std::endl;
-				this->__alloc_.construct(__tmp_.__end_++, *it);
+				reserve(this->size() + 1); // reserve
 			}
-			std::cout
-				<< "3" << std::endl;
-			swap(__tmp_);
+			pointer __p = this->__begin_ + __diff;
+			pointer __old_last = this->__end_;
+			while (__old_last != __p)
+			{
+				this->__alloc_.construct(__old_last, *(__old_last - 1));
+				this->__alloc_.destroy(__old_last - 1);
+				--__old_last;
+			}
+			std::uninitialized_fill(__p, __p + 1, val);
+			this->__end_ = this->__end_ + 1;
+			return iterator(__p);
 		}
 		return iterator(__p);
 	}
@@ -991,6 +997,30 @@ namespace ft
 		x.__end_ = tmp_end;
 		x.__end_cap_ = tmp_cap;
 		x.__alloc_ = tmp_all;
+	}
+
+	template <typename _Tp, typename _Allocator>
+	typename vector<_Tp, _Allocator>::iterator
+	vector<_Tp, _Allocator>::erase(const_iterator position) // erase one element
+	{
+		difference_type __diff = position - this->begin();
+		pointer __p = this->__begin_ + __diff;
+		pointer __old_pos = __p;
+		while (__old_pos != this->__end_)
+		{
+			this->__alloc_.destroy(__old_pos);
+			this->__alloc_.construct(__old_pos, *(__old_pos + 1));
+			++__old_pos;
+		}
+		this->__end_ -= 1;
+		return iterator(__p);
+	}
+
+	template <typename _Tp, typename _Allocator>
+	typename vector<_Tp, _Allocator>::iterator
+	vector<_Tp, _Allocator>::erase(const_iterator __first, const_iterator __last)
+	{
+		difference_type __gap = ft::distance(__first, __last);
 	}
 
 	template <typename _Tp, typename _Allocator>
