@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/10 16:51:06 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 19:17:48 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <iterator>
 #include "vector.hpp"
 #include <vector>
-#include "exampleClass.hpp"
 
 void test_basic_function(void);
 void test_constructor_with_parameter(void);
@@ -35,12 +34,18 @@ void my_insert_test_3(void);
 void erase_test_1(void);
 void erase_test_2(void);
 void resize_tester(void);
+void insert_tester(void);
+void assign_tester(void);
+void operator_tester(void);
 
 // --*-- main --*--
 
 int main(void)
 {
-	resize_tester();
+	operator_tester();
+	// assign_tester();
+	// insert_tester();
+	// resize_tester();
 	// erase_test_2();
 	// erase_test_1();
 	// my_insert_test_3();
@@ -60,10 +65,67 @@ int main(void)
 
 // --*-- Function --*--
 
+void operator_tester(void)
+{
+	ft::vector<float> ft_a;
+	ft_a.push_back(10);
+	ft_a.push_back(20);
+	ft_a.push_back(30);
+	ft::vector<float> ft_b;
+	ft_b.push_back(10.42f);
+	ft_b.push_back(20);
+	ft_b.push_back(30.33f);
+	std::cout << (ft_a != ft_b) << std::endl;
+}
+
+void assign_tester(void)
+{
+	ft::vector<int> a;
+	a.assign(100, 1);
+
+	std::vector<int> b;
+	b.assign(100, 1);
+
+	std::cout << "ft size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+	std::cout << "std size : " << b.size() << " capacity : " << b.capacity() << std::endl;
+}
+
+void insert_tester(void)
+{
+	ft::vector<std::string> ft_c0(4, "___");
+	std::vector<std::string> std_c0(4, "___");
+
+	ft_c0.insert(ft_c0.begin(), 1, "A");
+	std_c0.insert(std_c0.begin(), 1, "A");
+	for (ft::vector<std::string>::iterator it = ft_c0.begin(); it != ft_c0.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+	for (std::vector<std::string>::iterator it = std_c0.begin(); it != std_c0.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	ft_c0.insert(ft_c0.begin(), 1, "B");
+	std_c0.insert(std_c0.begin(), 1, "B");
+	for (ft::vector<std::string>::iterator it = ft_c0.begin(); it != ft_c0.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+	for (std::vector<std::string>::iterator it = std_c0.begin(); it != std_c0.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
 void resize_tester(void)
 {
-	ft::vector<exampleClass> ft(3);
-	std::vector<exampleClass> std(3);
+	ft::vector<int> ft(3);
+	std::vector<int> std(3);
 	std::cout << "ft size : " << ft.size() << std::endl;
 	std::cout << "std size : " << std.size() << std::endl;
 

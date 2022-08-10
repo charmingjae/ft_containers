@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/10 16:56:32 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 19:12:41 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,12 @@
 #define ___NOEXCEPT__ throw()
 
 // --*-- Include --*--
-#include <algorithm>	// std::min
-#include "iterator.hpp" // iterator
-#include <limits>		// numeric_limits
-#include <memory>		// allocator
-#include <stdexcept>	// standard exception
+#include <algorithm>	 // std::min
+#include <limits>		 // numeric_limits
+#include <memory>		 // allocator
+#include <stdexcept>	 // standard exception
+#include "iterator.hpp"	 // iterator
+#include "algorithm.hpp" // algorithm
 // --*-- Trash --*--
 #include <iostream>
 
@@ -842,7 +843,7 @@ namespace ft
 	template <typename _Tp, typename _Allocator>
 	void vector<_Tp, _Allocator>::assign(size_type __n, const_reference __u)
 	{
-		if (__n <= capacity()) // No reallocation needed
+		if (__n < capacity()) // No reallocation needed
 		{
 			size_type __s = size(); // get current size
 			std::uninitialized_fill_n(this->__begin_, std::min(__n, __s), __u);
@@ -951,7 +952,7 @@ namespace ft
 		pointer __old_last = this->__end_;
 		while (__old_last != __p)
 		{
-			this->__alloc_.construct(__old_last + n, *(__old_last - 1));
+			this->__alloc_.construct((__old_last - 1) + n, *(__old_last - 1));
 			this->__alloc_.destroy(__old_last - 1);
 			--__old_last;
 		}
@@ -1080,7 +1081,7 @@ namespace ft
 	template <class T, class Alloc>
 	bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
 	{
-		return (lhs == rhs);
+		return (lhs.size() == rhs.size()) && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 	}
 
 	template <class T, class Alloc>
@@ -1092,7 +1093,7 @@ namespace ft
 	template <class T, class Alloc>
 	bool operator<(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
 	{
-		return (lhs < rhs);
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 	}
 
 	template <class T, class Alloc>
@@ -1104,7 +1105,7 @@ namespace ft
 	template <class T, class Alloc>
 	bool operator>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs)
 	{
-		return (lhs > rhs);
+		return rhs < lhs;
 	}
 
 	template <class T, class Alloc>
