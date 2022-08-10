@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/10 15:20:04 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 16:51:06 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iterator>
 #include "vector.hpp"
 #include <vector>
+#include "exampleClass.hpp"
 
 void test_basic_function(void);
 void test_constructor_with_parameter(void);
@@ -33,12 +34,14 @@ void my_insert_test_2(void);
 void my_insert_test_3(void);
 void erase_test_1(void);
 void erase_test_2(void);
+void resize_tester(void);
 
 // --*-- main --*--
 
 int main(void)
 {
-	erase_test_2();
+	resize_tester();
+	// erase_test_2();
 	// erase_test_1();
 	// my_insert_test_3();
 	// my_insert_test_2();
@@ -56,6 +59,20 @@ int main(void)
 }
 
 // --*-- Function --*--
+
+void resize_tester(void)
+{
+	ft::vector<exampleClass> ft(3);
+	std::vector<exampleClass> std(3);
+	std::cout << "ft size : " << ft.size() << std::endl;
+	std::cout << "std size : " << std.size() << std::endl;
+
+	ft.resize(5);
+	std.resize(5);
+	std::cout << "ft size : " << ft.size() << std::endl;
+	std::cout << "std size : " << std.size() << std::endl;
+}
+
 void erase_test_1(void)
 {
 	ft::vector<int> a;
@@ -83,7 +100,27 @@ void erase_test_1(void)
 
 void erase_test_2(void)
 {
-	vector
+	std::vector<int> a;
+	a.push_back(1);
+	a.push_back(2);
+	a.push_back(3);
+	a.push_back(4);
+	a.push_back(5);
+
+	std::cout << "init size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+	for (std::vector<int>::iterator it = a.begin(); it != a.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+	// erase
+	std::cout << "erase return : " << *a.erase(a.begin() + 1, a.begin() + 3) << std::endl;
+	std::cout << "after size : " << a.size() << " capacity : " << a.capacity() << std::endl;
+	for (std::vector<int>::iterator it = a.begin(); it != a.end(); it++)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
 }
 
 void my_insert_test_3(void)
