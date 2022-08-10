@@ -1,6 +1,6 @@
 .DS_Store
 .vscode
 /temp*
-./tester*
+tester*
 ./include/bvalette*
 ./include/exampleClass.hpp

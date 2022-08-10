@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/10 19:12:41 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 21:18:46 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@
 #include <stdexcept>	 // standard exception
 #include "iterator.hpp"	 // iterator
 #include "algorithm.hpp" // algorithm
-// --*-- Trash --*--
-#include <iostream>
 
 namespace ft
 {
@@ -501,17 +499,28 @@ namespace ft
 		vector(const size_type __n, const value_type &__x);
 		vector(const size_type __n, const value_type &__x, const allocator_type &__a);
 		vector(const vector &x);
+		// 01. Any input iterator
 		template <typename _InputIterator>
 		vector(_InputIterator __first,
-			   typename enable_if<__is_input_iterator<_InputIterator>::value &&
-									  !__is_forward_iterator<_InputIterator>::value,
+			   typename enable_if<__is_input_iterator<_InputIterator>::value,
 								  _InputIterator>::type __last,
 			   const allocator_type &alloc = allocator_type());
-		template <typename _ForwardIterator>
-		vector(_ForwardIterator __first,
-			   typename enable_if<__is_forward_iterator<_ForwardIterator>::value,
-								  _ForwardIterator>::type __last,
-			   const allocator_type &alloc = allocator_type());
+
+		// // 02. Only input iterator
+		// template <typename _InputIterator>
+		// vector(_InputIterator __first,
+		// 	   typename enable_if<__is_input_iterator<_InputIterator>::value &&
+		// 							  !__is_forward_iterator<_InputIterator>::value,
+		// 						  _InputIterator>::type __last,
+		// 	   const allocator_type &alloc = allocator_type());
+
+		// // 03. For forward iterator
+		// template <typename _ForwardIterator>
+		// vector(_ForwardIterator __first,
+		// 	   typename enable_if<__is_forward_iterator<_ForwardIterator>::value,
+		// 						  _ForwardIterator>::type __last,
+		// 	   const allocator_type &alloc = allocator_type());
+
 		~vector();
 
 		// --*-- Member function --*--
@@ -710,33 +719,47 @@ namespace ft
 		}
 	}
 
+	// template <typename _Tp, typename _Allocator>
+	// template <typename _InputIterator>
+	// vector<_Tp, _Allocator>::vector(_InputIterator __first,
+	// 								typename enable_if<__is_input_iterator<_InputIterator>::value &&
+	// 													   !__is_forward_iterator<_InputIterator>::value,
+	// 												   _InputIterator>::type __last,
+	// 								const allocator_type &alloc) : __base(alloc)
+	// {
+	// 	for (; __first != __last; ++__first)
+	// 		push_back(*__first);
+	// }
+
+	// --
 	template <typename _Tp, typename _Allocator>
 	template <typename _InputIterator>
 	vector<_Tp, _Allocator>::vector(_InputIterator __first,
-									typename enable_if<__is_input_iterator<_InputIterator>::value &&
-														   !__is_forward_iterator<_InputIterator>::value,
+									typename enable_if<__is_input_iterator<_InputIterator>::value,
 													   _InputIterator>::type __last,
 									const allocator_type &alloc) : __base(alloc)
 	{
 		for (; __first != __last; ++__first)
 			push_back(*__first);
 	}
+	// --
 
-	template <typename _Tp, typename _Allocator>
-	template <typename _ForwardIterator>
-	vector<_Tp, _Allocator>::vector(_ForwardIterator __first,
-									typename enable_if<__is_forward_iterator<_ForwardIterator>::value,
-													   _ForwardIterator>::type __last,
-									const allocator_type &alloc) : __base(alloc)
-	{
-		size_type __n = static_cast<size_type>(ft::distance(__first, __last));
-		if (__n > 0)
-		{
-			this->__allocate_memory(__n); // allocate memory
-			std::uninitialized_copy(__first, __last, this->__end_);
-			this->__end_ = this->__begin_ + __n;
-		}
-	}
+	// template <typename _Tp, typename _Allocator>
+	// template <typename _ForwardIterator>
+	// vector<_Tp, _Allocator>::vector(_ForwardIterator __first,
+	// 								typename enable_if<__is_forward_iterator<_ForwardIterator>::value,
+	// 												   _ForwardIterator>::type __last,
+	// 								const allocator_type &alloc) : __base(alloc)
+	// {
+	// 	size_type __n = static_cast<size_type>(ft::distance(__first, __last));
+	// 	if (__n > 0)
+	// 	{
+	// 		this->__allocate_memory(__n); // allocate memory
+	// 		std::uninitialized_copy(__first, __last, this->__end_);
+	// 		this->__end_ = this->__begin_ + __n;
+	// 	}
+	// }
+
 	template <typename _Tp, typename _Allocator>
 	vector<_Tp, _Allocator>::vector(const vector &x) : __base(x.capacity())
 	{

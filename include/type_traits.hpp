@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:47:18 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/08 15:57:19 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 20:45:07 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define TYPE_TRAITS_HPP
 
 // --*-- Define in type_traits --*--
-#define _NOEXCEPT throw()
+#define ___NOEXCEPT__ throw()
 
 namespace ft
 {
@@ -25,7 +25,7 @@ namespace ft
 		static const _Tp value = __v; // constexpr
 		typedef _Tp value_type;
 		typedef integral_constant type;
-		operator value_type() const _NOEXCEPT { return value; } // constexpr
+		operator value_type() const ___NOEXCEPT__ { return value; } // constexpr
 	};
 
 	// true_type , false_type

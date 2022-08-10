@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:40:29 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/10 19:11:32 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 21:09:21 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define ITERATOR_HPP
 
 // --*-- Define --*--
-#define _NOEXCEPT throw()
+#define ___NOEXCEPT__ throw()
 
 // --*-- Include --*--
 #include "type_traits.hpp"
@@ -27,6 +27,14 @@ namespace ft
 	struct iterator_traits;
 
 	// --*-- Iterator tag --*--
+
+#ifdef _LIBCPP_ITERATOR
+	typedef std::input_iterator_tag input_iterator_tag;
+	typedef std::output_iterator_tag output_iterator_tag;
+	typedef std::forward_iterator_tag forward_iterator_tag;
+	typedef std::bidirectional_iterator_tag bidirectional_iterator_tag;
+	typedef std::random_access_iterator_tag random_access_iterator_tag;
+#else
 	struct input_iterator_tag
 	{
 	};
@@ -42,6 +50,7 @@ namespace ft
 	struct random_access_iterator_tag : public bidirectional_iterator_tag
 	{
 	};
+#endif
 
 	// --*--*--*--*--*--*--*--
 	// 		Base iterator
@@ -197,28 +206,28 @@ namespace ft
 
 	// --*-- is ... iterator --*--
 	template <typename _Iter>
-	struct __is_input_iterator : public integral_constant<bool, (is_same<typename __is_iterator<_Iter>::category, input_iterator_tag>::value ||
-																 is_same<typename __is_iterator<_Iter>::category, forward_iterator_tag>::value ||
-																 is_same<typename __is_iterator<_Iter>::category, bidirectional_iterator_tag>::value ||
-																 is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value)>
+	struct __is_input_iterator : public integral_constant<bool, is_same<typename __is_iterator<_Iter>::category, input_iterator_tag>::value ||
+																	is_same<typename __is_iterator<_Iter>::category, forward_iterator_tag>::value ||
+																	is_same<typename __is_iterator<_Iter>::category, bidirectional_iterator_tag>::value ||
+																	is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value>
 	{
 	};
 
 	template <typename _Iter>
-	struct __is_forward_iterator : public integral_constant<bool, (is_same<typename __is_iterator<_Iter>::category, forward_iterator_tag>::value ||
-																   is_same<typename __is_iterator<_Iter>::category, bidirectional_iterator_tag>::value ||
-																   is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value)>
+	struct __is_forward_iterator : public integral_constant<bool, is_same<typename __is_iterator<_Iter>::category, forward_iterator_tag>::value ||
+																	  is_same<typename __is_iterator<_Iter>::category, bidirectional_iterator_tag>::value ||
+																	  is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value>
 	{
 	};
 
 	template <typename _Iter>
-	struct __is_bidirectional_iteraotr : public integral_constant<bool, (is_same<typename __is_iterator<_Iter>::category, bidirectional_iterator_tag>::value ||
-																		 is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value)>
+	struct __is_bidirectional_iterator : public integral_constant<bool, is_same<typename __is_iterator<_Iter>::category, bidirectional_iterator_tag>::value ||
+																			is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value>
 	{
 	};
 
 	template <typename _Iter>
-	struct __is_random_access_iterator : public integral_constant<bool, (is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value)>
+	struct __is_random_access_iterator : public integral_constant<bool, is_same<typename __is_iterator<_Iter>::category, random_access_iterator_tag>::value>
 	{
 	};
 
@@ -285,8 +294,35 @@ namespace ft
 	typename iterator_traits<_InputIter>::difference_type
 	distance(_InputIter __first, _InputIter __last)
 	{
-		return __distance(__first, __last, typename iterator_traits<_InputIter>::iterator_category());
+		return ft::__distance(__first, __last, typename iterator_traits<_InputIter>::iterator_category());
 	}
+	// --
+	// template <typename _InputIterator>
+	// inline typename iterator_traits<_InputIterator>::difference_type __distance(
+	// 	_InputIterator __first, _InputIterator __last, ft::input_iterator_tag)
+	// {
+	// 	typename iterator_traits<_InputIterator>::difference_type d(0);
+	// 	for (; __first != __last; ++__first)
+	// 		++d;
+	// 	return d;
+	// }
+
+	// template <typename _RandIterator>
+	// inline typename iterator_traits<_RandIterator>::difference_type __distance(
+	// 	_RandIterator __first, _RandIterator __last,
+	// 	ft::random_access_iterator_tag)
+	// {
+	// 	return __last - __first;
+	// }
+
+	// template <typename _InputIterator>
+	// inline typename iterator_traits<_InputIterator>::difference_type distance(
+	// 	_InputIterator first, _InputIterator last)
+	// {
+	// 	return ft::__distance(
+	// 		first, last,
+	// 		typename iterator_traits<_InputIterator>::iterator_category());
+	// }
 
 	// --*--*--*--*--*--*--*--
 	// 		Reverse iterator
