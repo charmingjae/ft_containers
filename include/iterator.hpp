@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:40:29 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/10 21:09:21 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/10 21:23:24 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,36 +296,9 @@ namespace ft
 	{
 		return ft::__distance(__first, __last, typename iterator_traits<_InputIter>::iterator_category());
 	}
-	// --
-	// template <typename _InputIterator>
-	// inline typename iterator_traits<_InputIterator>::difference_type __distance(
-	// 	_InputIterator __first, _InputIterator __last, ft::input_iterator_tag)
-	// {
-	// 	typename iterator_traits<_InputIterator>::difference_type d(0);
-	// 	for (; __first != __last; ++__first)
-	// 		++d;
-	// 	return d;
-	// }
-
-	// template <typename _RandIterator>
-	// inline typename iterator_traits<_RandIterator>::difference_type __distance(
-	// 	_RandIterator __first, _RandIterator __last,
-	// 	ft::random_access_iterator_tag)
-	// {
-	// 	return __last - __first;
-	// }
-
-	// template <typename _InputIterator>
-	// inline typename iterator_traits<_InputIterator>::difference_type distance(
-	// 	_InputIterator first, _InputIterator last)
-	// {
-	// 	return ft::__distance(
-	// 		first, last,
-	// 		typename iterator_traits<_InputIterator>::iterator_category());
-	// }
 
 	// --*--*--*--*--*--*--*--
-	// 		Reverse iterator
+	// 	Reverse iterator
 	// --*--*--*--*--*--*--*--
 	template <typename _Iter>
 	class reverse_iterator : public iterator<typename iterator_traits<_Iter>::iterator_category,
