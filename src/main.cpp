@@ -6,23 +6,60 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/11 20:35:38 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/11 21:55:41 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include "iterator.hpp"
-#include <iterator>
-#include "vector.hpp"
-#include <vector>
+// --*-- STL --*--
+#include <map>
 #include <list>
-#include <chrono>
 #include <stack>
+#include <vector>
+#include <chrono>
+#include <iterator>
+#include <string>
+#include <iostream>
+
+// --*-- FT --*--
+#include "iterator.hpp"
+#include "vector.hpp"
 #include "stack.hpp"
 #include "utility.hpp"
 
 using namespace std::chrono;
 // --*-- function implement --*--
+
+// --*--*--*--*--*--*--*--*--*--*--*--*--*--
+// *
+// * 	MAP
+// *
+// --*--*--*--*--*--*--*--*--*--*--*--*--*--
+
+void stl_map_basic_test(void)
+{
+	std::map<std::string, int> a;
+	a.insert(std::pair<std::string, int>("mcha", 1));	  // mcha
+	a.insert(std::pair<std::string, int>("yongjule", 1)); // mchas
+	a.insert(std::pair<std::string, int>("ghan", 1));	  // mcha
+	a.insert(std::pair<std::string, int>("jiskim", 1));	  // mchas
+
+	for (std::map<std::string, int>::iterator it = a.begin(); it != a.end(); it++)
+	{
+		std::cout << it->first << " " << it->second << std::endl;
+	}
+
+	std::cout << std::endl;
+	std::cout << "Begin : " << a.begin()->first << " " << a.begin()->second << std::endl;
+	std::cout << "End : " << (--a.end())->first << " " << (--a.end())->second << std::endl;
+	std::cout << "Cnt : " << a.count("mcha") << std::endl;
+	std::cout << "Cnt : " << a.count("mchad") << std::endl;
+	std::cout << "Size : " << a.size() << std::endl;
+}
+
+void map_stl_test(void)
+{
+	stl_map_basic_test();
+}
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--
 // *
@@ -571,7 +608,8 @@ void ft_clear_test(void)
 
 void test(void)
 {
-	// stack_test();
+	// --*-- SINGLE TEST --*--
+	map_stl_test();
 	// -- time --
 	system_clock::time_point start_time = system_clock::now();
 	// --*--*--*--*--*--*--*--*--*--*--*--*--*--
