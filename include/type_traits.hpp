@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:47:18 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/11 14:19:23 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/11 21:11:30 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,61 @@ namespace ft
 	struct __void_t
 	{
 		typedef void type;
+	};
+
+	// is_integral
+	template <class _Tp>
+	struct __libcpp_is_integral : public false_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<bool> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<char> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<signed char> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<unsigned char> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<wchar_t> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<short> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<unsigned short> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<int> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<unsigned int> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<long> : public true_type
+	{
+	};
+	template <>
+	struct __libcpp_is_integral<unsigned long> : public true_type
+	{
+	};
+
+	template <typename _Tp>
+	struct is_integral : public __libcpp_is_integral<typename remove_cv<_Tp>::type>
+	{
 	};
 }
 
