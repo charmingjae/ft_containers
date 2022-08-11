@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 22:42:17 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/10 21:23:45 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/11 14:02:20 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include <limits>		 // numeric_limits
 #include <memory>		 // allocator
 #include <stdexcept>	 // standard exception
-#include "iterator.hpp"	 // iterator
+#include "iterator.hpp"	 // iterators
 #include "algorithm.hpp" // algorithm
 
 namespace ft

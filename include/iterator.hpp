@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/26 15:40:29 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/10 21:23:24 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/11 14:30:22 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,16 @@ namespace ft
 		typedef typename remove_cv<_Tp>::type value_type; // type_traits
 		typedef _Tp *pointer;
 		typedef _Tp &reference;
+		typedef random_access_iterator_tag iterator_category;
+	};
+
+	template <typename _Tp>
+	struct iterator_traits<const _Tp *>
+	{
+		typedef ptrdiff_t difference_type;
+		typedef typename remove_cv<_Tp>::type value_type; // type_traits
+		typedef const _Tp *pointer;
+		typedef const _Tp &reference;
 		typedef random_access_iterator_tag iterator_category;
 	};
 

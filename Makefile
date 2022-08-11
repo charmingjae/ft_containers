@@ -6,7 +6,7 @@
 #    By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/26 13:55:55 by mcha              #+#    #+#              #
-#    Updated: 2022/08/10 16:26:43 by mcha             ###   ########.fr        #
+#    Updated: 2022/08/11 19:44:19 by mcha             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,5 +56,8 @@ re					:
 debug				:
 					@make DEBUG=1
 					@echo "[-] DEBUG PROCESS"
+llvm				:
+					@make LLVM=1
+					@echo "[-] LLVM STL"
 
-.PHONY 				: all clean fclean re debug
+.PHONY 				: all clean fclean re debug llvm
