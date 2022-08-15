@@ -6,7 +6,7 @@
 #    By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/26 13:55:55 by mcha              #+#    #+#              #
-#    Updated: 2022/08/11 19:44:19 by mcha             ###   ########.fr        #
+#    Updated: 2022/08/15 17:51:12 by mcha             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC_DIR				=	./src/
 # Source
 SRC					= $(addprefix $(SRC_DIR), \
 											main.cpp \
+											rbtree.cpp \
 											)
 
 OBJ					= $(SRC:%.cpp=%.o)
