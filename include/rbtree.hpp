@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/15 21:40:16 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/15 22:26:58 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,30 @@
 
 namespace ft
 {
+	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+	// PROTOTYPE
+	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+
+	// *--*--*--*--*--*--*--*--*--*--*
+	// Struct prototype
+	struct _rb_tree_node_base;
+
+	// *--*--*--*--*--*--*--*--*--*--*
+	// Iterator increment prototype
+	_rb_tree_node_base *_rb_tree_increment(_rb_tree_node_base *__x) throw();
+	const _rb_tree_node_base *_rb_tree_increment(const _rb_tree_node_base *__x) throw();
+	_rb_tree_node_base *_rb_tree_decrement(_rb_tree_node_base *__x) throw();
+	const _rb_tree_node_base *_rb_tree_decrement(const _rb_tree_node_base *__x) throw();
+
+	// *--*--*--*--*--*--*--*--*--*--*
+	// Rebalance prototype
+	void _rb_tree_insert_and_rebalance(const bool __insert_left,
+									   _rb_tree_node_base *__x,
+									   _rb_tree_node_base *__p,
+									   _rb_tree_node_base &__header) throw();
+	_rb_tree_node_base *_rb_tree_rebalance_for_erase(_rb_tree_node_base *const __z,
+													 _rb_tree_node_base &__header) throw();
+
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 	// Node color
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
@@ -105,6 +129,8 @@ namespace ft
 		_rb_tree_node_base __header; // header variable
 		size_t __node_count;		 // Track of size of tree
 
+		// *--*--*--*--*--*--*--*--*--*--*
+		// Functor constructor
 		_rb_tree_header() ___NOEXCEPT__ // Functor constructor
 		{
 			__header.__color = COLOR_RED;
@@ -133,7 +159,175 @@ namespace ft
 		}
 	}; // End of _rb_tree_header
 
+	template <typename _Value>
+	struct _rb_tree_node : public _rb_tree_node_base
+	{
+		typedef _rb_tree_node<_Value> *_link_type;
+
+		_Value __value_field;
+		_Value *__valptr() { return &__value_field; }
+		const _Value *__valptr() const { return &__value_field; }
+
+	}; // End of _rb_tree_node
+
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+	// Iterator
+	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+	template <typename _Tp>
+	struct _rb_tree_iterator
+	{
+		typedef _Tp value_type;
+		typedef _Tp &reference;
+		typedef _Tp *pointer;
+
+		typedef bidirectional_iterator_tag iterator_category;
+		typedef ptrdiff_t difference_type;
+
+		typedef _rb_tree_iterator<_Tp> _self;
+		typedef _rb_tree_node_base::_base_ptr _base_ptr;
+		typedef _rb_tree_node<_Tp> *_link_type;
+
+		_base_ptr __node;
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// Functor constructor
+		_rb_tree_iterator() ___NOEXCEPT__
+			: __node() {}
+		explicit _rb_tree_iterator(_base_ptr __x) ___NOEXCEPT__
+			: __node(__x) {} // Set base ptr with __X
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// Functor operator
+		reference operator*() const ___NOEXCEPT__
+		{
+			return *static_cast<_link_type>(__node)->__valptr();
+		}
+
+		pointer operator->() const ___NOEXCEPT__
+		{
+			return static_cast<_link_type>(__node)->__valptr();
+		}
+
+		_self &operator++() ___NOEXCEPT__
+		{
+			__node = _rb_tree_increment(__node);
+			return *this;
+		}
+
+		_self operator++(int) ___NOEXCEPT__
+		{
+			_self __tmp = *this;
+			__node = _rb_tree_increment(__node);
+			return __tmp;
+		}
+
+		_self &operator--() ___NOEXCEPT__
+		{
+			__node = _rb_tree_decrement(__node);
+			return *this;
+		}
+
+		_self operator--(int) ___NOEXCEPT__
+		{
+			_self __tmp = *this;
+			__node = _rb_tree_decrement(__node);
+			return __tmp;
+		}
+
+		friend bool operator==(const _self &__x, const _self &__y) ___NOEXCEPT__
+		{
+			return __x.__node == __y.__node;
+		}
+
+		friend bool operator!=(const _self &__x, const _self &__y) ___NOEXCEPT__
+		{
+			return __x.__node != __y.__node;
+		}
+	}; // End of _rb_tree_iterator
+
+	template <typename _Tp>
+	struct _rb_tree_const_iterator
+	{
+		typedef _Tp value_type;
+		typedef const _Tp &reference;
+		typedef const _Tp *pointer;
+
+		typedef _rb_tree_iterator<_Tp> iterator; // normal iterator
+		typedef bidirectional_iterator_tag iterator_category;
+		typedef ptrdiff_t difference_type;
+
+		typedef _rb_tree_iterator<_Tp> _self;
+		typedef _rb_tree_node_base::_const_base_ptr _base_ptr;
+		typedef const _rb_tree_node<_Tp> *_link_type;
+
+		_base_ptr __node;
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// Functor constructor
+		_rb_tree_const_iterator() ___NOEXCEPT__
+			: __node() {}
+		explicit _rb_tree_const_iterator(_base_ptr __x) ___NOEXCEPT__
+			: __node(__x) {} // Set base ptr with __X
+		_rb_tree_const_iterator(const iterator &__it) ___NOEXCEPT__
+			: __node(__it.__node) {} // Set base ptr with __it.__node
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// Wrap const cast
+		iterator __const_cast() const ___NOEXCEPT__
+		{
+			return iterator(const_cast<typename iterator::_base_ptr>(__node));
+		}
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// Functor operator
+		reference operator*() const ___NOEXCEPT__
+		{
+			return *static_cast<_link_type>(__node)->__valptr();
+		}
+
+		pointer operator->() const ___NOEXCEPT__
+		{
+			return static_cast<_link_type>(__node)->__valptr();
+		}
+
+		_self &operator++() ___NOEXCEPT__
+		{
+			__node = _rb_tree_increment(__node);
+			return *this;
+		}
+
+		_self operator++(int) ___NOEXCEPT__
+		{
+			_self __tmp = *this;
+			__node = _rb_tree_increment(__node);
+			return __tmp;
+		}
+
+		_self &operator--() ___NOEXCEPT__
+		{
+			__node = _rb_tree_decrement(__node);
+			return *this;
+		}
+
+		_self operator--(int) ___NOEXCEPT__
+		{
+			_self __tmp = *this;
+			__node = _rb_tree_decrement(__node);
+			return __tmp;
+		}
+
+		friend bool operator==(const _self &__x, const _self &__y) ___NOEXCEPT__
+		{
+			return __x.__node == __y.__node;
+		}
+
+		friend bool operator!=(const _self &__x, const _self &__y) ___NOEXCEPT__
+		{
+			return __x.__node != __y.__node;
+		}
+	}; // End of _rb_tree_const_iterator
+
+		// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 	// EXAMPLE
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 }
