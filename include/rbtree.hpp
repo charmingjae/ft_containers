@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/15 22:26:58 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/15 23:08:53 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,7 +327,76 @@ namespace ft
 		}
 	}; // End of _rb_tree_const_iterator
 
-		// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+	// Red - Black tree
+	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc = std::allocator<_Value> >
+	class _rb_tree
+	{
+		// allocator<_Value> other;
+		typedef typename _Alloc::template rebind<_rb_tree_node<_Value> >::other _node_allocator;
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Protected ] type definition
+	protected:
+		typedef _rb_tree_node_base *_base_ptr;
+		typedef const _rb_tree_node_base *_const_base_ptr;
+		typedef _rb_tree_node<_Value> *_link_type;
+		typedef const _rb_tree_node<_Value> *_const_link_type;
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Public ] type definition
+	public:
+		typedef _Key key_type;
+		typedef _Value value_type;
+		typedef value_type *pointer;
+		typedef const value_type *const_pointer;
+		typedef value_type &reference;
+		typedef const value_type &const_reference;
+		typedef size_t size_type;
+		typedef ptrdiff_t difference_type;
+		typedef _Alloc allocator_type;
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Protected ] Member variable
+	protected:
+		_rb_tree_impl<_Compare> __impl; // node allocator?
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Public ] Function implementation
+	public:
+		_node_allocator &__get_node_allocator() ___NOEXCEPT__
+		{
+			return this->__impl;
+		}
+
+		const _node_allocator &__get_node_allocator() const ___NOEXCEPT__
+		{
+			return this->__impl;
+		}
+
+		allocator_type get_allocator() const ___NOEXCEPT__
+		{
+			return allocator_type(__get_node_allocator());
+		}
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Protected ] Function implementation
+	protected:
+		_link_type __allocate_node()
+		{
+			return this->__get_node_allocator().allocate(1);
+		}
+
+		void __deallocate_node(_link_type __p) ___NOEXCEPT__
+		{
+			this->__get_node_allocator(__p, 1);
+		}
+
+		}; // Finally red - black 'class' is entrance
+
+	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 	// EXAMPLE
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 }
