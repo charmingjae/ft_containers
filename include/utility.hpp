@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 20:25:24 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/11 21:27:49 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/16 16:29:20 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,14 @@ namespace ft
 	pair<_T1, _T2> make_pair(_T1 __x, _T2 __y)
 	{
 		return pair<_T1, _T2>(__x, __y);
+	}
+
+	template <typename T>
+	void swap(T &x, T &y)
+	{
+		T tmp(x);
+		x = y;
+		y = tmp;
 	}
 }
 

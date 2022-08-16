@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/15 23:08:53 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/16 15:48:06 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <memory>
 #include <cstddef>
 #include "iterator.hpp"
+#include "utility.hpp"
 
 namespace ft
 {
@@ -32,6 +33,7 @@ namespace ft
 	// *--*--*--*--*--*--*--*--*--*--*
 	// Struct prototype
 	struct _rb_tree_node_base;
+	struct _rb_tree_impl;
 
 	// *--*--*--*--*--*--*--*--*--*--*
 	// Iterator increment prototype
@@ -358,10 +360,44 @@ namespace ft
 		typedef ptrdiff_t difference_type;
 		typedef _Alloc allocator_type;
 
+		// iterator
+		typedef _rb_tree_iterator<value_type> iterator;
+		typedef _rb_tree_const_iterator<value_type> const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Protected ] Structure
+	protected:
+		template <typename _Key_compare>
+		struct _rb_tree_impl : public _node_allocator,
+							   public _rb_tree_key_compare<_Key_compare>,
+							   public _rb_tree_header
+		{
+			typedef _rb_tree_key_compare<_Key_compare> _base_key_compare;
+
+			// Functor constructor
+			_rb_tree_impl() ___NOEXCEPT__
+				: _node_allocator()
+			{
+			}
+
+			_rb_tree_impl(const _rb_tree_impl &__x)
+				: _node_allocator(__x), _base_key_compare(__x.__key_compare), _rb_tree_header()
+			{
+			}
+
+			_rb_tree_impl(const _Key_compare &__comp, const _node_allocator &__a)
+				: _node_allocator(__a), _base_key_compare(__com)
+			{
+			}
+		};
+
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Protected ] Member variable
 	protected:
-		_rb_tree_impl<_Compare> __impl; // node allocator?
+		_rb_tree_impl<_Compare>
+			__impl; // node allocator?
 
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Public ] Function implementation
@@ -394,7 +430,304 @@ namespace ft
 			this->__get_node_allocator(__p, 1);
 		}
 
-		}; // Finally red - black 'class' is entrance
+		void __construct_node(_link_type __node, const value_type &__x) // rb tree node, value
+		{
+			this->get_allocator().construct(__node->__valptr(), __x);
+		}
+
+		_link_type __create_node(const value_type &__x)
+		{
+			_link_type __tmp = __allocate_node();
+			__construct_node(__tmp, __x);
+			return __tmp;
+		}
+
+		void __destroy_node(_link_type __p) ___NOEXCEPT__
+		{
+			get_allocator().destroy(__p->__valptr());
+		}
+
+		void __drop_node(_link_type __p) ___NOEXCEPT__ // delete node
+		{
+			__destroy_node(__p);
+			__deallocate_node(__p);
+		}
+
+		template <bool _MoveValue, typename _NodeGen>
+		_link_type __clone_node(_link_type __x, _NodeGen &__node_gen)
+		{
+			// _link_type __tmp = __node_gen(*__x->__valptr()); // Fix needed
+			_link_type __tmp = __create_node(*__x->__valptr());
+			__tmp->__color = __x->__color;
+			__tmp->__left = 0;
+			__tmp->__right = 0;
+			return __tmp;
+		}
+
+		// RETURN SPECIFIC NODE
+		_base_ptr &__root() ___NOEXCEPT__
+		{
+			return this->__impl.__header.__parent;
+		}
+
+		_const_base_ptr __root() const ___NOEXCEPT__
+		{
+			return this->__impl.__header.__parent;
+		}
+
+		_base_ptr &__leftmost() ___NOEXCEPT__
+		{
+			return this->__impl.__header.__left;
+		}
+
+		_const_base_ptr __leftmost() const ___NOEXCEPT__
+		{
+			return this->__impl.__header.__left;
+		}
+
+		_base_ptr &__rightmost() ___NOEXCEPT__
+		{
+			return this->__impl.__header.__right;
+		}
+
+		_const_base_ptr __rightmost() ___NOEXCEPT__
+		{
+			return this->__impl.__header.__right;
+		}
+
+		_link_type __mbegin() const ___NOEXCEPT__
+		{
+			return static_cast<_link_type>(this->__impl.__header.__parent);
+		}
+
+		_link_type __begin() ___NOEXCEPT__
+		{
+			return __mbegin();
+		}
+
+		_const_link_type __begin() const ___NOEXCEPT__
+		{
+			return static_cast<_const_link_type>(this->__impl.__header.__parent);
+		}
+
+		_base_ptr __end() ___NOEXCEPT__
+		{
+			return &this->__impl.__header;
+		}
+
+		_const_base_ptr __end() const ___NOEXCEPT__
+		{
+			return &this->__impl.__header;
+		}
+
+		// RETURN KEY
+		static const _Key &__key(_const_link_type __x)
+		{
+			return _KeyOfValue()(*__x->__valptr());
+		}
+
+		static const _Key &__key(_const_base_ptr __x)
+		{
+			return __key(static_cast<_const_link_type>(__x));
+		}
+
+		// RETURN NODE
+		static _link_type __left(_base_ptr __x) ___NOEXCEPT__
+		{
+			return static_cast<_link_type>(__x->__left);
+		}
+
+		static _const_link_type __left(_const_base_ptr __x) ___NOEXCEPT__
+		{
+			return static_cast<_const_link_type>(__x->__left);
+		}
+
+		static _link_type __right(_base_ptr __x) ___NOEXCEPT__
+		{
+			return static_cast<_link_type>(__x->__right);
+		}
+
+		static _const_link_type __right(_const_base_ptr __x) ___NOEXCEPT__
+		{
+			return static_cast<_const_link_type>(__x->__right);
+		}
+
+		// RETURN MAX or MIN NODE
+		static _base_ptr __minimum(_base_ptr __x) ___NOEXCEPT__
+		{
+			return _rb_tree_node_base::_s_minimum(__x);
+		}
+
+		static _const_base_ptr __minimum(_const_base_ptr __x) ___NOEXCEPT__
+		{
+			return _rb_tree_node_base::_s_minimum(__x);
+		}
+
+		static _base_ptr __maximum(_base_ptr __x) ___NOEXCEPT__
+		{
+			return _rb_tree_node_base::_s_maximum(__x);
+		}
+
+		static _const_base_ptr __maximum(_const_base_ptr __x) ___NOEXCEPT__
+		{
+			return _rb_tree_node_base::_s_maximum(__x);
+		}
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Public ] Function prototype
+	public:
+		ft::pair<_base_ptr, _base_ptr>
+		__get_insert_unique_pos(const key_type &__k);
+		ft::pair<_base_ptr, _base_ptr>
+		__get_insert_equal_pos(const key_type &__k);
+		ft::pair<_base_ptr, _base_ptr>
+		__get_insert_hint_unique_pos(const_iterator __pos, const key_type &__k);
+		ft::pair<_base_ptr, _base_ptr>
+		__get_insert_hint_equal_pos(const_iterator __pos, const key_type &__k);
+
+		// *--*--*--*--*--*--*--*--*--*--*
+		// [ Private ] Function implementation
+	private:
+		// template <bool _MoveValues, typename _NodeGen>
+		_link_type __copy(_link_type, _base_ptr);
+		// template <bool _MoveValues, typename _NodeGen>
+		_link_type __copy(const _rb_tree &__x)
+		{
+			_link_type __root = __copy(__x.__begin(), __end());
+			__leftmost() = __minimum(__root);
+			__rightmost() = __maximum(__root);
+			__impl.__node_count = __x.__impl.__node_count;
+			return __root;
+		}
+
+		void __erase(_link_type __x);
+		iterator __lower_bound(_link_type __x, _base_ptr __y, const _Key &__k);
+		const_iterator __lower_bound(_const_link_type __x, _const_base_ptr __y, const _Key &__k) const;
+		iterator __upper_bound(_link_type __x, _base_ptr __y, const _Key &__k);
+		const_iterator __upper_bound(_const_link_type __x, _const_base_ptr __y, const _Key &__k) const;
+
+		void __erase_aux(const_iterator __position);
+		void __erase_aux(const_iterator __first, const_iterator __last);
+
+	public:
+		_rb_tree()
+		{
+		}
+
+		_rb_tree(const _Compare &__comp, const allocator_type &__a = allocator_type())
+			: __impl(__comp, _node_allocator(__a))
+		{
+		}
+
+		_rb_tree(const _rb_tree &__x)
+			: __impl(__x.__impl)
+		{
+			if (__x.__root() != 0)
+				__root() = __copy(__x);
+		}
+
+		~_rb_tree() ___NOEXCEPT__
+		{
+			__erase(__begin());
+		}
+
+		_rb_tree &operator=(const _rb_tree &__x);
+
+		// Accessors
+		_Compare key_comp() const
+		{
+			return __impl.__key_compare;
+		}
+
+		iterator begin() ___NOEXCEPT__
+		{
+			return iterator(this->__impl.__header.__left);
+		}
+
+		const_iterator begin() const ___NOEXCEPT__
+		{
+			return const_iterator(this->__impl.__header.__left);
+		}
+
+		iterator end() ___NOEXCEPT__
+		{
+			return iterator(&this->__impl.__header);
+		}
+
+		const_iterator end() const ___NOEXCEPT__
+		{
+			return const_iterator(&this->__impl.__header);
+		}
+
+		reverse_iterator rbegin() ___NOEXCEPT__
+		{
+			return reverse_iterator(end());
+		}
+
+		const_reverse_iterator rbegin() const ___NOEXCEPT__
+		{
+			return const_reverse_iterator(end());
+		}
+
+		reverse_iterator rend() ___NOEXCEPT__
+		{
+			return reverse_iterator(begin());
+		}
+
+		const_reverse_iterator rend() const ___NOEXCEPT__
+		{
+			return const_reverse_iterator(begin());
+		}
+
+		bool empty() const ___NOEXCEPT__
+		{
+			return __impl.__node_count == 0;
+		}
+
+		size_type size() const ___NOEXCEPT__
+		{
+			return __impl.__node_count;
+		}
+
+		size_type max_size() const ___NOEXCEPT__
+		{
+			return __get_node_allocator().max_size();
+		}
+
+		void swap(_rb_tree &__t) ___NOEXCEPT__;
+
+		void erase(iterator __position)
+		{
+			__erase_aux(__position);
+		}
+
+	}; // Finally red - black 'class' is entrance
+
+	// *--*--*--*--*--*--*--*--*--*--*
+	// Member function implementation
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	void _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__erase_aux(const_iterator __position)
+	{
+		_link_type __y = static_cast<_link_type>(_rb_tree_rebalance_for_erase(const_cast<_base_ptr>(_position.__node), this->__impl.__header));
+		__drop_node(__y);
+		--__impl.__node_count;
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	void _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__erase_aux(const_iterator __first, const_iterator __last)
+	{
+		if (__first == begin() && __last == end())
+		{
+			clear();
+		}
+		else
+		{
+			while (__first != __last)
+				__erase_aux(__first++);
+		}
+	}
 
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 	// EXAMPLE
