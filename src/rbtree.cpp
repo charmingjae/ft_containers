@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 17:28:57 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/16 18:09:49 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/16 22:54:43 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,61 +131,63 @@ namespace ft
 		__x->__parent = __y;
 	}
 
-	// Rebalance
 	_rb_tree_node_base *_rb_tree_rebalance_for_erase(_rb_tree_node_base *const __z,
 													 _rb_tree_node_base &__header) ___NOEXCEPT__
 	{
 		_rb_tree_node_base *&__root = __header.__parent;
 		_rb_tree_node_base *&__leftmost = __header.__left;
 		_rb_tree_node_base *&__rightmost = __header.__right;
-		_rb_tree_node_base *__y = __z;
-		_rb_tree_node_base *__x = 0;
+		_rb_tree_node_base *__y = __z; // point node that will be deleted
+		_rb_tree_node_base *__x = 0;   // Substitution node
 		_rb_tree_node_base *__x_parent = 0;
 
-		// Check __z has child
-		if (__y->__left == 0)		// __z has at most one non-null child. y == z.
+		// *--*--*--*--*--*--*--*--*--*--*--*--
+		// Check __z has non-null child
+		if (__y->__left == 0)		// __z has at most one non-null child.
 			__x = __y->__right;		// __x might be null.
-		else if (__y->__right == 0) // __z has exactly one non-null child. y == z.
+		else if (__y->__right == 0) // __z has exactly one non-null child.
 			__x = __y->__left;		// __x is not null.
-		else						// if __z's both child is not null
+		else
 		{
-			// __z has two non-null children. Set __y to __z's successor. __x might be null
-			__y = __y->__right;
-			while (__y->__left != 0)
+			// __z has two non-null child. set __y to __z's successor. __x might be null
+			__y = __y->__right;		 // Find substitution node in right sub-tree
+			while (__y->__left != 0) // Key-word: 'tree_minimum'
 				__y = __y->__left;
 			__x = __y->__right;
 		}
 
-		if (__y != __z) // Relink y in place of z. y is z's successor
+		// *--*--*--*--*--*--*--*--*--*--*--*--
+		// check __z has more than one non-null child do this -> if (__y != __z)
+		if (__y != __z)
 		{
-			__z->__left->__parent = __y;
-			__y->__left = __z->__left;
-			if (__y != __z->__right)
+			// link __y instead of __z.
+			// __y is z's successor
+			__z->__left->__parent = __y; // Link z's left node to __y
+			__y->__left = __z->__left;	 // Link y's left node with z's left node
+			if (__y != __z->__right)	 // if __y->__right(__z->__right) node has more left child node
 			{
-				__x_parent = __y->__parent;
-				if (__x)
+				__x_parent = __y->__parent; // __z의 right sub-tree의 leftmost = y. y의 parent = __x_parent
+				if (__x)					// if __x is not nil
 					__x->__parent = __y->__parent;
 				__y->__parent->__left = __x; // __y must be a child of __left
 				__y->__right = __z->__right;
 				__z->__right->__parent = __y;
 			}
 			else
-			{
 				__x_parent = __y;
-			}
-			if (__root == __z)
+			if (__root == __z) // Set root
 				__root = __y;
-			else if (__z->__parent->__left = __z)
+			else if (__z->__parent->__left == __z) // relink z to y
 				__z->__parent->__left = __y;
 			else
-				__z->__parent->__right = __y;
-			__y->__parent = __z->__parent;
-			ft::swap(__y->__color, __z->__color);
-			__y = __z;
-			// __y now points to node to be actually deleted
+				__z->__parent->__right = __y;	  // relink z to y
+			__y->__parent = __z->__parent;		  // link z's parent to y's parent
+			ft::swap(__y->__color, __z->__color); // swap color
+			__y = __z;							  // __y pointing to be actually deleted node
 		}
-		else // __y == __z
+		else // __y == __z -> __z has no non-null child
 		{
+			// Simplification
 			__x_parent = __y->__parent;
 			if (__x)
 				__x->__parent = __y->__parent;
@@ -195,67 +197,57 @@ namespace ft
 				__z->__parent->__left = __x;
 			else
 				__z->__parent->__right = __x;
-			if (__leftmost == __z)
+			if (__leftmost == __z) // set leftmost
 			{
-				if (__z->__right == 0) // __z->__left must be null also
+				if (__z->__right == 0)
 					__leftmost = __z->__parent;
-				// makes __leftmost == __header if __z == __root
 				else
 					__leftmost = _rb_tree_node_base::_s_minimum(__x);
 			}
-			if (__rightmost == __z)
+			if (__rightmost == __z) // set rightmost
 			{
 				if (__z->__left == 0)
 					__rightmost = __z->__parent;
 				else
 					__rightmost = _rb_tree_node_base::_s_maximum(__x);
 			}
-		}
-		// recoloring, rotate ..
-		// __y = Will be deleted node
-		// __x = Replace node
-		if (__y->__color != COLOR_RED) // deleted node is not RED
+		} // End of relink
+		// Adjustment
+		// Now __y point __z actually will be deleted
+		if (__y->__color != COLOR_RED) // if y's(__z) color is Black, it will destroy the nature of the red-black tree
 		{
-			while (__x != __root && (__x == 0 || __x->__color == COLOR_BLACK)) // until __x is black...
+			while (__x != __root && (__x == 0 || __x->__color == COLOR_BLACK)) // When x is not nil
 			{
-				if (__x == __x_parent->__left)
+				if (__x == __x_parent->__left) // x is left child node
 				{
-					_rb_tree_node_base *__w = __x_parent->__right;
-					if (__w->__color == COLOR_RED) // #Case 2-4: if x's sibling is RED
-					{
-						__w->__color = COLOR_BLACK;					   // change sibling's color to BLACK
-						__x_parent->__color = COLOR_RED;			   // change parent color to RED
-						local_rb_tree_rotate_left(__x_parent, __root); // rotate
-						__w = __x_parent->__right;					   // Set __w
-					}
-					if ((__w->__left == 0 ||
-						 __w->__left->__color == COLOR_BLACK) &&
-						(__w->__right == 0 ||
-						 __w->__right->__color == COLOR_BLACK))
-					{
-						__w->__color = COLOR_RED;
-						__x = __x_parent;
-						__x_parent = __x_parent->__parent;
-					}
-					else
-					{
-						if (__w->__right == 0 || __w->__right->__color == COLOR_BLACK)
-						{
-							__w->__left->__color = COLOR_BLACK;
-							__w->__color = COLOR_RED;
-							local_rb_tree_rotate_right(__w, __root);
-							__w = __x_parent->__right;
-						}
-						__w->__color = __x_parent->__color;
-						__x_parent->__color = COLOR_BLACK;
-						if (__w->__right)
-							__w->__right->__color = COLOR_BLACK;
-						local_rb_tree_rotate_right(__x_parent, __root);
-						break;
-					}
-				}
-				else
-				{
+					_rb_tree_node_base *__w = __x_parent->__right; // x's brother node
+
+					// if (__w->__color == COLOR_RED)
+					// {
+					// 	__w->__color = COLOR_BLACK;
+					// 	__x_parent->__color = COLOR_RED;
+					// 	local_rb_tree_rotate_left(__x_parent, __root);
+					// 	__w = __x_parent->__right;
+					// }
+
+					// if ((__w->__left == 0 || __w->__left->__color == COLOR_BLACK) &&
+					// 	(__w->__right == 0 || __w->__right->__color == COLOR_BLACK))
+					// {
+					// 	__w->__color = COLOR_RED;
+					// 	__x = __x_parent;
+					// 	__x_parent = __x_parent->__parent;
+					// }
+					// else
+					// {
+					// 	if (__w->__right == 0 || __w->__right->__color == COLOR_BLACK)
+					// 	{
+					// 		__w->__left->__color = COLOR_BLACK;
+					// 		__w->__color = COLOR_RED;
+					// 		local_rb_tree_rotate_right(__w, __root);
+					// 		__w = __x_parent->__right;
+					// 	}
+					// 	__w->__color = __x_parent->__color;
+					// }
 				}
 			}
 		}
