@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 17:28:57 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/17 16:26:03 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/17 16:50:14 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,54 @@ namespace ft
 		// Rebalance
 		while (__x != __root && __x->__parent->__color == COLOR_RED) // While error-case exist
 		{
+			_rb_tree_node_base *const __xpp = __x->__parent->__parent; // Grandparent
+
+			if (__x->__parent == __xpp->__left) // if grandparent's left node is new node's parent
+			{
+				_rb_tree_node_base *const __uncle = __xpp->__right; // uncle is parent's sibling and __x's uncle
+				if (__uncle && __uncle->__color == COLOR_RED)		// Uncle color and new node color is red
+				{
+					__x->__parent->__color = COLOR_BLACK; // Change parent color
+					__uncle->__color = COLOR_BLACK;		  // Change uncle color
+					__xpp->__color = COLOR_RED;			  // Change grandparent color
+					__x = __xpp;						  // point Grandparent
 				}
+				else // Uncle not exist or Uncle color is Black
+				{
+					if (__x == __x->__parent->__right) // if new node is right child node of parent
+					{
+						__x = __x->__parent;
+						local_rb_tree_rotate_left(__x, __root);
+					}
+					__x->__parent->__color = COLOR_BLACK;
+					__xpp->__color = COLOR_RED;
+					local_rb_tree_rotate_right(__xpp, __root);
+				}
+			}
+			else // __x->__parent != __xpp->__left __x->__parent might be right of xpp
+			{
+				_rb_tree_node_base *const __uncle = __xpp->__left;
+				if (__uncle && __uncle->__color == COLOR_RED)
+				{
+					__x->__parent->__color = COLOR_BLACK; // Change parent color
+					__uncle->__color = COLOR_BLACK;		  // Change uncle color
+					__xpp->__color = COLOR_RED;			  // Change grandparent color
+					__x = __xpp;						  // point Grandparent
+				}
+				else
+				{
+					if (__x == __x->__parent->__left)
+					{
+						__x = __x->__parent;
+						local_rb_tree_rotate_right(__x, __root);
+					}
+					__x->__parent->__color = COLOR_BLACK;
+					__xpp->__color = COLOR_RED;
+					local_rb_tree_rotate_left(__xpp, __root);
+				}
+			}
+		}
+		__root->__color = COLOR_BLACK;
 	}
 
 	// ==================================================================================================

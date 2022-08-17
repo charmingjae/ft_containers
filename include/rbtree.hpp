@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/17 15:31:22 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/17 22:51:53 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,8 +397,7 @@ namespace ft
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Protected ] Member variable
 	protected:
-		_rb_tree_impl<_Compare>
-			__impl; // node allocator?
+		_rb_tree_impl<_Compare> __impl; // node allocator?
 
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Public ] Function implementation
@@ -417,6 +416,9 @@ namespace ft
 		{
 			return allocator_type(__get_node_allocator());
 		}
+
+		ft::pair<_base_ptr, _base_ptr>
+		__get_insert_hint_unique_pos(const_iterator __pos, const key_type &__k);
 
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Protected ] Function implementation
@@ -579,12 +581,6 @@ namespace ft
 	public:
 		ft::pair<_base_ptr, _base_ptr>
 		__get_insert_unique_pos(const key_type &__k);
-		ft::pair<_base_ptr, _base_ptr>
-		__get_insert_equal_pos(const key_type &__k);
-		ft::pair<_base_ptr, _base_ptr>
-		__get_insert_hint_unique_pos(const_iterator __pos, const key_type &__k);
-		ft::pair<_base_ptr, _base_ptr>
-		__get_insert_hint_equal_pos(const_iterator __pos, const key_type &__k);
 
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Private ] Function implementation
@@ -592,7 +588,7 @@ namespace ft
 		// template <typename _NodeGen>
 		iterator __insert_(_base_ptr __x, _base_ptr __y, const value_type &__v);
 		// template <bool _MoveValues, typename _NodeGen>
-		_link_type __copy(_link_type, _base_ptr);
+		_link_type __copy(_link_type __x, _base_ptr __y);
 		// template <bool _MoveValues, typename _NodeGen>
 		_link_type __copy(const _rb_tree &__x)
 		{
@@ -698,6 +694,29 @@ namespace ft
 		}
 
 		void swap(_rb_tree &__t) ___NOEXCEPT__;
+
+		iterator __insert_unique_hint_pos(const_iterator __pos, const value_type &__x);
+
+		template <typename _InputIterator>
+		void
+		__insert_range_unique(_InputIterator __first, _InputIterator __last)
+		{
+			// this->__create_node(*this);
+			for (; __first != __last; ++__first)
+				__insert_unique_hint_pos(end(), *__first);
+
+			// 1.
+			// iterator
+			// _M_insert_unique_(const_iterator __pos, const value_type &__x)
+			// {
+			// 	_Alloc_node __an(*this);
+			// 	return _M_insert_unique_(__pos, __x, __an);
+			// }
+
+			// 2.
+			// Insert node using get_insert_hint_unique_pos
+			// return resfirst
+		}
 
 		void erase(iterator __position)
 		{
@@ -828,6 +847,313 @@ namespace ft
 		++__impl.__node_count;
 		return iterator(__z);
 	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::_link_type
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__copy(_link_type __x, _base_ptr __p)
+	{
+		_link_type __top = __clone_node(__x); // new node with __x
+		__top->__parent = __p;
+
+		if (__x->__right)
+			__top->__right = __copy(__right(__x), __top);
+		__p = __top;
+		__x = __left(__x);
+
+		while (__x != 0)
+		{
+			_link_type __y = __clone_node(__x);
+			__p->__left = __y;
+			__y->__parent = __p;
+			if (__x->__right)
+				__y->__right = __copy(__right(__x), __y);
+			__p = __y;
+			__x = __left(__x);
+		}
+		return __top;
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	void _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__erase(_link_type __x)
+	{
+		while (__x != 0)
+		{
+			__erase(__right(__x));
+			_link_type __y = __left(__x);
+			__drop_node(__x);
+			__x = __y;
+		}
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::iterator
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__lower_bound(_link_type __x, _base_ptr __y, const _Key &__k)
+	{
+		while (__x != 0)
+		{
+			if (!__impl.__key_compare(__key(__x), __k))
+			{
+				__y = __x;
+				__x = __left(__x);
+			}
+			else
+				__x = __right(__x);
+		}
+		return iterator(__y);
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::const_iterator
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__lower_bound(_const_link_type __x, _const_base_ptr __y, const _Key &__k) const
+	{
+		while (__x != 0)
+		{
+			if (!__impl.__key_compare(__key(__x), __k))
+			{
+				__y = __x;
+				__x = __left(__x);
+			}
+			else
+				__x = __right(__x);
+		}
+		return const_iterator(__y);
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::iterator
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__upper_bound(_link_type __x, _base_ptr __y, const _Key &__k)
+	{
+		while (__x != 0)
+			if (__impl.__key_compare(__k, __key(__x)))
+				__y = __x, __x = __left(__x);
+			else
+				__x = __right(__x);
+		return iterator(__y);
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::const_iterator
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__upper_bound(_const_link_type __x, _const_base_ptr __y, const _Key &__k) const
+	{
+		while (__x != 0)
+			if (__impl.__key_compare(__k, __key(__x)))
+				__y = __x, __x = __left(__x);
+			else
+				__x = __right(__x);
+		return const_iterator(__y);
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	ft::pair<typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::iterator,
+			 typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::iterator>
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::equal_range(const key_type &__k)
+	{
+		_link_type __x = __begin();
+		_base_ptr __y = __end();
+		while (__x != 0)
+		{
+			if (__impl.__key_compare(__key(__x), __k))
+				__x = __right(__x);
+			else if (__impl.__key_compare(__k, __key(__x)))
+			{
+				__y = __x;
+				__x = __left(__x);
+			}
+			else
+			{
+				_link_type __xu(__x);
+				_base_ptr __yu(__y);
+				__y = __x;
+				__x = __left(__x);
+				__xu = __right(__xu);
+				return ft::pair<iterator, iterator>(__lower_bound(__x, __y, __k),
+													__upper_bound(__xu, __yu, __k));
+			}
+		}
+		return ft::pair<iterator, iterator>(iterator(__y), iterator(__y));
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	ft::pair<typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::const_iterator,
+			 typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::const_iterator>
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::equal_range(const key_type &__k) const
+	{
+		_const_link_type __x = __begin();
+		_const_base_ptr __y = __end();
+		while (__x != 0)
+		{
+			if (__impl.__key_compare(__key(__x), __k))
+				__x = __right(__x);
+			else if (__impl.__key_compare(__k, __key(__x)))
+				__y = __x, __x = __left(__x);
+			else
+			{
+				_const_link_type __xu(__x);
+				_const_base_ptr __yu(__y);
+				__y = __x, __x = __left(__x);
+				__xu = __right(__xu);
+				return ft::pair<const_iterator,
+								const_iterator>(__lower_bound(__x, __y, __k),
+												__upper_bound(__xu, __yu, __k));
+			}
+		}
+		return ft::pair<const_iterator, const_iterator>(const_iterator(__y),
+														const_iterator(__y));
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	void _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::swap(_rb_tree &__t) ___NOEXCEPT__
+	{
+		if (__root() == 0)
+		{
+			if (__t.__root() != 0)
+				__impl.__move_data(__t.__impl);
+		}
+		else if (__t.__root() == 0)
+			__t.__impl.__move_data(__impl);
+		else
+		{
+			ft::swap(__root(), __t.__root());
+			ft::swap(__leftmost(), __t.__leftmost());
+			ft::swap(__rightmost(), __t.__rightmost());
+
+			__root()->__parent = __end();
+			__t.__root()->__parent = __t.__end();
+			ft::swap(this->__impl.__node_count, __t.__impl.__node_count);
+		}
+		ft::swap(this->__impl.__key_compare, __t.__impl.__key_compare);
+		ft::swap(this->__get_node_allocator(), __t.__get_node_allocator());
+	}
+
+	// ==============================================================================
+	// ==============================================================================
+	// ==============================================================================
+	// ==============================================================================
+	// ==============================================================================
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	ft::pair<typename _rb_tree<_Key, _Value, _KeyOfValue,
+							   _Compare, _Alloc>::_base_ptr,
+			 typename _rb_tree<_Key, _Value, _KeyOfValue,
+							   _Compare, _Alloc>::_base_ptr>
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__get_insert_unique_pos(const key_type &__k)
+	{
+		// __k = insert node's key
+		// pair<first, last>
+		// first : if not null, insert left. Or insert right.
+		// second : if not null, parent of node will be inserted
+		//			if null, node will not be inserted.
+		// pair typedef
+		typedef pair<_base_ptr, _base_ptr> _Res;
+		_link_type __x = __begin();
+		_base_ptr __y = __end();
+
+		bool __comp = true;
+		while (__x != 0)
+		{
+			__y = __x;										// y might be leafnode
+			__comp = __impl.__key_compare(__k, __key(__x)); // new node's key is smaller than __x's key
+			__x = __comp ? __left(__x) : __right(__x);		// if __k is smaller than __x, __x is going to left node
+		}
+		iterator __j = iterator(__y);
+		if (__comp) // k < key of x
+		{
+			if (__j == begin())		   // root
+				return _Res(__x, __y); // the first node will be inserted at left
+			else
+				--__j; // decrement
+		}
+		if (__impl.__key_compare(__key(__j.__node), __k)) // if j's key is smaller than __k
+			return _Res(__x, __y);						  // new node will be inserted at __y's left
+		return _Res(__j.__node, 0);						  // node will not be inserted, equivalent key..
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue, typename _Compare, typename _Alloc>
+	ft::pair<typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::_base_ptr,
+			 typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::_base_ptr>
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__get_insert_hint_unique_pos(const_iterator __position,
+																						const key_type &__k)
+	{
+		// _M_get_insert_hint_unique_pos(const_iterator __position, const key_type &__k)
+		// __k = insert node's key
+		// pair<first, last>
+		// first : if not null, insert left. Or insert right.
+		// second : if not null, parent of node will be inserted
+		//			if null, node will not be inserted.
+		iterator __pos = __position.__const_cast(); // Make const
+		typedef pair<_base_ptr, _base_ptr> _Res;	// pair typedef
+
+		if (__pos.__node == __end()) // if position's node is end node
+		{
+			// if tree is not empty and new node's key is bigger than rightmost
+			// return 0, rightmost
+			if (size() > 0 && __impl.__key_compare(__key(__rightmost()), __k))
+				return _Res(0, __rightmost()); // insert right at rightmost's child
+			else							   // tree is empty or new node's key is smaller than rightmost, insert node root location
+				return __get_insert_unique_pos(__k);
+		}
+		else if (__impl.__key_compare(__k, __key(__pos.__node))) // __k is smaller than position's node
+		{
+			iterator __before = __pos;
+			if (__pos.__node == __leftmost())			 //
+				return _Res(__leftmost(), __leftmost()); // will be inserted leftmost's left position
+			else if (__impl.__key_compare(__key((--__before).__node), __k))
+			{
+				if (__right(__before.__node) == 0)			 // __before's right is nil
+					return _Res(0, __before.__node);		 //
+				else										 // __before's right is not nil.
+					return _Res(__pos.__node, __pos.__node); // will be inserted
+			}
+			else
+				return __get_insert_unique_pos(__k);
+		}
+		else if (__impl.__key_compare(__key(__pos.__node), __k)) // k is bigger than pos's node
+		{
+			iterator __after = __pos;
+			if (__pos.__node == __rightmost())
+				return _Res(0, __rightmost());
+			else if (__impl.__key_compare(__k, __key((++__after).__node)))
+			{
+				if (__right(__pos.__node) == 0)
+					return _Res(0, __pos.__node);
+				else
+					return _Res(__after.__node, __after.__node);
+			}
+			else
+				return __get_insert_unique_pos(__k);
+		}
+		else
+			return _Res(__pos.__node, 0); // Equivalent key
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue, typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::iterator
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__insert_unique_hint_pos(const_iterator __pos, const value_type &__x)
+	{
+		// pos: end, value_type: *first
+		ft::pair<_base_ptr, _base_ptr> __res = __get_insert_hint_unique_pos(__pos, _KeyOfValue()(__x));
+
+		if (__res.second) // if pair's second is null, the node will not be inserted.
+			return __insert_(__res.first, __res.second, __x);
+		return iterator(__res.first);
+	}
+
+	// ft::pair<_base_ptr, _base_ptr>
+	// __get_insert_equal_pos(const key_type &__k);
+	// ft::pair<_base_ptr, _base_ptr>
+	// __get_insert_hint_unique_pos(const_iterator __pos, const key_type &__k);
+	// ft::pair<_base_ptr, _base_ptr>
+	// __get_insert_hint_equal_pos(const_iterator __pos, const key_type &__k);
 
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 	// EXAMPLE

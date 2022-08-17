@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 20:25:24 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/16 16:29:20 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/17 20:25:29 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,21 @@ namespace ft
 		x = y;
 		y = tmp;
 	}
+
+	// --*-- Select 1st --*--
+	template <typename _Pair>
+	struct _Select1st
+	{
+		typename _Pair::first_type &operator()(_Pair &__x) const
+		{
+			return __x.first;
+		}
+
+		const typename _Pair::first_type &operator()(const _Pair &__x) const
+		{
+			return __x.first;
+		}
+	};
 }
 
 #endif
