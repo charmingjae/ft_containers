@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 17:28:57 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/16 22:54:43 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/17 16:26:03 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,55 @@ namespace ft
 		__x->__parent = __y;
 	}
 
+	// ==================================================================================================
+	// Insert and rebalance
+	// ==================================================================================================
+	void _rb_tree_insert_and_rebalance(const bool __insert_left,
+									   _rb_tree_node_base *__x,
+									   _rb_tree_node_base *__p,
+									   _rb_tree_node_base &__header) throw()
+	{
+		// __x = new node
+		// __p = position? parent?
+		_rb_tree_node_base *&__root = __header.__parent;
+
+		// Initialize fields in new node to insert.
+		__x->__parent = __p;
+		__x->__left = 0;
+		__x->__right = 0;
+		__x->__color = COLOR_RED;
+
+		// Insert node
+		// Make new node child of parent and maintain root, leftmost and rightmost nodes
+		// First node is always inserted left
+		if (__insert_left) // Insert left
+		{
+			__p->__left = __x;	  // Set parent's left node as __x
+			if (__p == &__header) // __p is root.. -> tree is empty
+			{
+				__header.__parent = __x;
+				__header.__right = __x;
+			}
+			else if (__p == __header.__left) // Set new leftmost
+				__header.__left = __x;
+		}
+		else // Tree is not empty
+		{
+			__p->__right = __x;
+			if (__p == __header.__right) // Set new rightmost
+				__header.__right = __x;
+		}
+
+		// Rebalance
+		while (__x != __root && __x->__parent->__color == COLOR_RED) // While error-case exist
+		{
+				}
+	}
+
+	// ==================================================================================================
+	// Erase and rebalance
+	// ==================================================================================================
+
 	_rb_tree_node_base *_rb_tree_rebalance_for_erase(_rb_tree_node_base *const __z,
 													 _rb_tree_node_base &__header) ___NOEXCEPT__
 	{
@@ -222,34 +271,76 @@ namespace ft
 				{
 					_rb_tree_node_base *__w = __x_parent->__right; // x's brother node
 
-					// if (__w->__color == COLOR_RED)
-					// {
-					// 	__w->__color = COLOR_BLACK;
-					// 	__x_parent->__color = COLOR_RED;
-					// 	local_rb_tree_rotate_left(__x_parent, __root);
-					// 	__w = __x_parent->__right;
-					// }
-
-					// if ((__w->__left == 0 || __w->__left->__color == COLOR_BLACK) &&
-					// 	(__w->__right == 0 || __w->__right->__color == COLOR_BLACK))
-					// {
-					// 	__w->__color = COLOR_RED;
-					// 	__x = __x_parent;
-					// 	__x_parent = __x_parent->__parent;
-					// }
-					// else
-					// {
-					// 	if (__w->__right == 0 || __w->__right->__color == COLOR_BLACK)
-					// 	{
-					// 		__w->__left->__color = COLOR_BLACK;
-					// 		__w->__color = COLOR_RED;
-					// 		local_rb_tree_rotate_right(__w, __root);
-					// 		__w = __x_parent->__right;
-					// 	}
-					// 	__w->__color = __x_parent->__color;
-					// }
+					// Case 2-4: Red - Black - Black
+					if (__w->__color == COLOR_RED) // if brother's color is RED
+					{
+						__w->__color = COLOR_BLACK;		 // RED - BLACK - BLACK case
+						__x_parent->__color = COLOR_RED; // parent's color to RED
+						local_rb_tree_rotate_left(__x_parent, __root);
+						__w = __x_parent->__right; // Now, __x_parent's left node is double-black
+					}
+					if ((__w->__left == 0 || __w->__left->__color == COLOR_BLACK) &&
+						(__w->__right == 0 || __w->__right->__color == COLOR_BLACK)) // Case 1-1 ALL BLACK
+					{
+						__w->__color = COLOR_RED; // sibling's color to RED
+						__x = __x_parent;
+						__x_parent = __x_parent->__parent;
+					}
+					else
+					{
+						if (__w->__right == 0 || __w->__right->__color == COLOR_BLACK)
+						{
+							__w->__left->__color = COLOR_BLACK;
+							__w->__color = COLOR_RED;
+							local_rb_tree_rotate_right(__w, __root);
+							__w = __x_parent->__right;
+						}
+						__w->__color = __x_parent->__color;
+						__x_parent->__color = COLOR_BLACK;
+						if (__w->__right)
+							__w->__right->__color = COLOR_BLACK;
+						local_rb_tree_rotate_left(__x_parent, __root);
+						break;
+					}
+				}
+				else
+				{
+					_rb_tree_node_base *__w = __x_parent->__left;
+					if (__w->__color == COLOR_RED)
+					{
+						__w->__color = COLOR_BLACK;
+						__x_parent->__color = COLOR_RED;
+						local_rb_tree_rotate_right(__x_parent, __root);
+						__w = __x_parent->__left;
+					}
+					if ((__w->__right == 0 || __w->__right->__color == COLOR_BLACK) &&
+						(__w->__left == 0 || __w->__left->__color == COLOR_BLACK))
+					{
+						__w->__color = COLOR_RED;
+						__x = __x_parent;
+						__x_parent = __x_parent->__parent;
+					}
+					else
+					{
+						if (__w->__left == 0 || __w->__left->__color == COLOR_BLACK)
+						{
+							__w->__right->__color = COLOR_BLACK;
+							__w->__color = COLOR_RED;
+							local_rb_tree_rotate_left(__w, __root);
+							__w = __x_parent->__left;
+						}
+						__w->__color = __x_parent->__color;
+						__x_parent->__color = COLOR_BLACK;
+						if (__w->__left)
+							__w->__left->__color = COLOR_BLACK;
+						local_rb_tree_rotate_right(__x_parent, __root);
+						break;
+					}
 				}
 			}
+			if (__x)
+				__x->__color = COLOR_BLACK;
 		}
+		return __y;
 	}
 }

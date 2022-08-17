@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/16 15:48:06 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/17 15:31:22 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <cstddef>
 #include "iterator.hpp"
 #include "utility.hpp"
+#include "algorithm.hpp"
 
 namespace ft
 {
@@ -388,7 +389,7 @@ namespace ft
 			}
 
 			_rb_tree_impl(const _Key_compare &__comp, const _node_allocator &__a)
-				: _node_allocator(__a), _base_key_compare(__com)
+				: _node_allocator(__a), _base_key_compare(__comp)
 			{
 			}
 		};
@@ -453,8 +454,8 @@ namespace ft
 			__deallocate_node(__p);
 		}
 
-		template <bool _MoveValue, typename _NodeGen>
-		_link_type __clone_node(_link_type __x, _NodeGen &__node_gen)
+		template <bool _MoveValue>
+		_link_type __clone_node(_link_type __x)
 		{
 			// _link_type __tmp = __node_gen(*__x->__valptr()); // Fix needed
 			_link_type __tmp = __create_node(*__x->__valptr());
@@ -490,7 +491,7 @@ namespace ft
 			return this->__impl.__header.__right;
 		}
 
-		_const_base_ptr __rightmost() ___NOEXCEPT__
+		_const_base_ptr __rightmost() const ___NOEXCEPT__
 		{
 			return this->__impl.__header.__right;
 		}
@@ -588,6 +589,8 @@ namespace ft
 		// *--*--*--*--*--*--*--*--*--*--*
 		// [ Private ] Function implementation
 	private:
+		// template <typename _NodeGen>
+		iterator __insert_(_base_ptr __x, _base_ptr __y, const value_type &__v);
 		// template <bool _MoveValues, typename _NodeGen>
 		_link_type __copy(_link_type, _base_ptr);
 		// template <bool _MoveValues, typename _NodeGen>
@@ -701,15 +704,100 @@ namespace ft
 			__erase_aux(__position);
 		}
 
+		void erase(const_iterator __position)
+		{
+			__erase_aux(__position);
+		}
+
+		size_type erase(const key_type &__x);
+
+		void erase(iterator __first, iterator __last)
+		{
+			__erase_aux(__first, __last);
+		}
+
+		void erase(const_iterator __first, const_iterator __last)
+		{
+			__erase_aux(__first, __last);
+		}
+
+		void clear() ___NOEXCEPT__
+		{
+			__erase(__begin());
+			__impl.__reset();
+		}
+
+		iterator find(const key_type &__k);
+		const_iterator find(const key_type &__k) const;
+		size_type count(const key_type &__k) const;
+		iterator lower_bound(const key_type &__k)
+		{
+			return __lower_bound(__begin(), __end(), __k);
+		}
+		const_iterator lower_bound(const key_type &__k) const
+		{
+			return __lower_bound(__begin(), __end(), __k);
+		}
+		iterator upper_bound(const key_type &__k)
+		{
+			return __upper_bound(__begin(), __end(), __k);
+		}
+		const_iterator upper_bound(const key_type &__k) const
+		{
+			return __upper_bound(__begin(), __end(), __k);
+		}
+
+		pair<iterator, iterator>
+		equal_range(const key_type &__k);
+
+		pair<const_iterator, const_iterator>
+		equal_range(const key_type &__k) const;
+
+		friend bool operator==(const _rb_tree &__x, const _rb_tree &__y)
+		{
+			return __x.size() == __y.size() && ft::equal(__x.begin(), __x.end(), __y.begin());
+		}
+
+		friend bool operator<(const _rb_tree &__x, const _rb_tree &__y)
+		{
+			return ft::lexicographical_compare(__x.begin(), __x.end(),
+											   __y.begin(), __y.end());
+		}
+
 	}; // Finally red - black 'class' is entrance
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	void swap(_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc> &__x,
+			  _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc> &__y)
+	{
+		__x.swap(__y);
+	}
 
 	// *--*--*--*--*--*--*--*--*--*--*
 	// Member function implementation
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc> &
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::operator=(const _rb_tree &__x)
+	{
+		if (this != &__x)
+		{
+			// this->clear(); // How about this?
+			__impl.__reset();
+			__impl.__key_compare = __x.__key_compare;
+			if (__x.__root() != 0)
+				__root() = __copy(__x);
+		}
+		return *this;
+	}
+
 	template <typename _Key, typename _Value, typename _KeyOfValue,
 			  typename _Compare, typename _Alloc>
 	void _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__erase_aux(const_iterator __position)
 	{
-		_link_type __y = static_cast<_link_type>(_rb_tree_rebalance_for_erase(const_cast<_base_ptr>(_position.__node), this->__impl.__header));
+		_link_type __y = static_cast<_link_type>(_rb_tree_rebalance_for_erase(const_cast<_base_ptr>(__position.__node), this->__impl.__header));
 		__drop_node(__y);
 		--__impl.__node_count;
 	}
@@ -727,6 +815,18 @@ namespace ft
 			while (__first != __last)
 				__erase_aux(__first++);
 		}
+	}
+
+	template <typename _Key, typename _Value, typename _KeyOfValue,
+			  typename _Compare, typename _Alloc>
+	typename _rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::iterator
+	_rb_tree<_Key, _Value, _KeyOfValue, _Compare, _Alloc>::__insert_(_base_ptr __x, _base_ptr __p, const _Value &__v)
+	{
+		bool __insert_left = (__x != 0 || __p == __end() || __impl.__key_compare(_KeyOfValue()(__v), __key(__p)));
+		_link_type __z = this->__create_node(__v);
+		_rb_tree_insert_and_rebalance(__insert_left, __z, __p, this->__impl.__header);
+		++__impl.__node_count;
+		return iterator(__z);
 	}
 
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
