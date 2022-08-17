@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/17 22:51:53 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/18 00:14:36 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -701,21 +701,8 @@ namespace ft
 		void
 		__insert_range_unique(_InputIterator __first, _InputIterator __last)
 		{
-			// this->__create_node(*this);
 			for (; __first != __last; ++__first)
 				__insert_unique_hint_pos(end(), *__first);
-
-			// 1.
-			// iterator
-			// _M_insert_unique_(const_iterator __pos, const value_type &__x)
-			// {
-			// 	_Alloc_node __an(*this);
-			// 	return _M_insert_unique_(__pos, __x, __an);
-			// }
-
-			// 2.
-			// Insert node using get_insert_hint_unique_pos
-			// return resfirst
 		}
 
 		void erase(iterator __position)
