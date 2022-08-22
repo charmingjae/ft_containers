@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 19:55:35 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 21:19:39 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 21:38:46 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 // *--*--*--*--*--*--*--*--*--*--*
 // Include
 #include <stdexcept>
+#include <functional>
 
 #include "algorithm.hpp"
 #include "iterator"

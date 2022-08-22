@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 20:25:24 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 21:28:12 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 22:03:01 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,28 @@ namespace ft
 			return __x.first;
 		}
 	};
+
+	// --*-- Identity --*--
+	template <typename _Tp>
+	struct _Identity
+	{
+		_Tp &operator()(_Tp &__x) const
+		{
+			return __x;
+		}
+
+		const _Tp &operator()(const _Tp &__x) const
+		{
+			return __x;
+		}
+	};
+
+	// --*-- _Identity specialization --*--
+	template <typename _Tp>
+	struct _Identity<const _Tp> : _Identity<_Tp>
+	{
+	};
+
 } // namespace ft
 
 #endif
