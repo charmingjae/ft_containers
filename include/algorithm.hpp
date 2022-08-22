@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/10 18:58:32 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 16:59:40 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:06:55 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 namespace ft
 {
 	template <class InputIterator1, class InputIterator2>
-	bool equal(InputIterator1 first1, InputIterator1 last1,
-			   InputIterator2 first2)
+	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)
 	{
 		while (first1 != last1)
 		{
@@ -44,6 +43,6 @@ namespace ft
 		}
 		return (first2 != last2);
 	}
-}
+} // namespace ft
 
 #endif

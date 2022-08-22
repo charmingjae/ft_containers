@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/04 16:47:18 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 17:00:16 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:04:43 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,9 +146,10 @@ namespace ft
 	};
 
 	template <typename _Tp>
-	struct is_integral : public __libcpp_is_integral<typename remove_cv<_Tp>::type>
+	struct is_integral
+		: public __libcpp_is_integral<typename remove_cv<_Tp>::type>
 	{
 	};
-}
+} // namespace ft
 
 #endif

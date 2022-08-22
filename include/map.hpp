@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 19:55:35 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 17:02:27 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:04:49 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@
 
 // *--*--*--*--*--*--*--*--*--*--*
 // Include
+#include <stdexcept>
+
 #include "algorithm.hpp"
 #include "iterator"
 #include "rbtree.hpp"
 #include "utility.hpp"
-#include <stdexcept>
-
 namespace ft
 {
 	// =================================================================================================
@@ -45,7 +45,10 @@ namespace ft
 
 	private:
 		typedef typename _Alloc::template rebind<value_type>::other _pair_alloc_type;
-		typedef _rb_tree<key_type, value_type, /* key of compare */ ft::_Select1st<value_type>, key_compare, allocator_type> __base;
+		typedef _rb_tree<key_type, value_type,
+						 /* key of compare */ ft::_Select1st<value_type>, key_compare,
+						 allocator_type>
+			__base;
 
 	public:
 		typedef typename allocator_type::pointer pointer;
@@ -60,7 +63,8 @@ namespace ft
 		typedef typename __base::const_reverse_iterator const_reverse_iterator;
 
 	public:
-		class value_compare : public std::binary_function<value_type, value_type, bool>
+		class value_compare
+			: public std::binary_function<value_type, value_type, bool>
 		{
 			friend class map<_Key, _Tp, _Compare, _Alloc>;
 
@@ -85,7 +89,8 @@ namespace ft
 
 		// __comp: A comparison object
 		// __a: An allocator object
-		explicit map(const _Compare &__comp, const allocator_type &__a = allocator_type())
+		explicit map(const _Compare &__comp,
+					 const allocator_type &__a = allocator_type())
 			: __tree(__comp, __a) {}
 
 		// Map copy constructor
@@ -98,7 +103,8 @@ namespace ft
 		}
 
 		template <typename _InputIterator>
-		map(_InputIterator __first, _InputIterator __last, const _Compare &__comp, const allocator_type &__a = allocator_type())
+		map(_InputIterator __first, _InputIterator __last, const _Compare &__comp,
+			const allocator_type &__a = allocator_type())
 			: __tree(__comp, __a)
 		{
 			__tree.__insert_range_unique(__first, __last);
@@ -115,60 +121,30 @@ namespace ft
 			return allocator_type(__tree.get_allocator());
 		}
 
-		iterator begin() ___NOEXCEPT__
-		{
-			return __tree.begin();
-		}
+		iterator begin() ___NOEXCEPT__ { return __tree.begin(); }
 
-		const_iterator begin() const ___NOEXCEPT__
-		{
-			return __tree.begin();
-		}
+		const_iterator begin() const ___NOEXCEPT__ { return __tree.begin(); }
 
-		iterator end() ___NOEXCEPT__
-		{
-			return __tree.end();
-		}
+		iterator end() ___NOEXCEPT__ { return __tree.end(); }
 
-		const_iterator end() const ___NOEXCEPT__
-		{
-			return __tree.end();
-		}
+		const_iterator end() const ___NOEXCEPT__ { return __tree.end(); }
 
-		reverse_iterator rbegin() ___NOEXCEPT__
-		{
-			return __tree.rbegin();
-		}
+		reverse_iterator rbegin() ___NOEXCEPT__ { return __tree.rbegin(); }
 
 		const_reverse_iterator rbegin() const ___NOEXCEPT__
 		{
 			return __tree.rbegin();
 		}
 
-		reverse_iterator rend() ___NOEXCEPT__
-		{
-			return __tree.rend();
-		}
+		reverse_iterator rend() ___NOEXCEPT__ { return __tree.rend(); }
 
-		const_reverse_iterator rend() const ___NOEXCEPT__
-		{
-			return __tree.rend();
-		}
+		const_reverse_iterator rend() const ___NOEXCEPT__ { return __tree.rend(); }
 
-		bool empty() const ___NOEXCEPT__
-		{
-			return __tree.empty();
-		}
+		bool empty() const ___NOEXCEPT__ { return __tree.empty(); }
 
-		size_type size() const ___NOEXCEPT__
-		{
-			return __tree.size();
-		}
+		size_type size() const ___NOEXCEPT__ { return __tree.size(); }
 
-		size_type max_size() const ___NOEXCEPT__
-		{
-			return __tree.max_size();
-		}
+		size_type max_size() const ___NOEXCEPT__ { return __tree.max_size(); }
 
 		mapped_type &operator[](const key_type &__k)
 		{
@@ -179,10 +155,7 @@ namespace ft
 			return (*__i).second; // node's value
 		}
 
-		void __throw_out_of_range(const char *msg)
-		{
-			throw std::out_of_range(msg);
-		}
+		void __throw_out_of_range(const char *msg) { throw std::out_of_range(msg); }
 
 		mapped_type &at(const key_type &__k)
 		{
@@ -218,70 +191,40 @@ namespace ft
 		}
 
 		// map erase
-		void erase(iterator __position)
-		{
-			__tree.erase(__position);
-		}
+		void erase(iterator __position) { __tree.erase(__position); }
 
-		size_type erase(const key_type &__x)
-		{
-			return __tree.erase(__x);
-		}
+		size_type erase(const key_type &__x) { return __tree.erase(__x); }
 
 		void erase(iterator __first, iterator __last)
 		{
 			__tree.erase(__first, __last);
 		}
 
-		void swap(map &__x) ___NOEXCEPT__
-		{
-			__tree.swap(__x.__tree);
-		}
+		void swap(map &__x) ___NOEXCEPT__ { __tree.swap(__x.__tree); }
 
-		void clear() ___NOEXCEPT__
-		{
-			__tree.clear();
-		}
+		void clear() ___NOEXCEPT__ { __tree.clear(); }
 
-		key_compare key_comp() const
-		{
-			return __tree.key_comp();
-		}
+		key_compare key_comp() const { return __tree.key_comp(); }
 
-		value_compare value_comp() const
-		{
-			return value_compare(__tree.key_comp());
-		}
+		value_compare value_comp() const { return value_compare(__tree.key_comp()); }
 
-		iterator find(const key_type &__x)
-		{
-			return __tree.find(__x);
-		}
+		iterator find(const key_type &__x) { return __tree.find(__x); }
 
-		const_iterator find(const key_type &__x) const
-		{
-			return __tree.find(__x);
-		}
+		const_iterator find(const key_type &__x) const { return __tree.find(__x); }
 
 		size_type count(const key_type &__x) const
 		{
 			return __tree.find(__x) == __tree.end() ? 0 : 1;
 		}
 
-		iterator lower_bound(const key_type &__x)
-		{
-			return __tree.lower_bound(__x);
-		}
+		iterator lower_bound(const key_type &__x) { return __tree.lower_bound(__x); }
 
 		const_iterator lower_bound(const key_type &__x) const
 		{
 			return __tree.lower_bound(__x);
 		}
 
-		iterator upper_bound(const key_type &__x)
-		{
-			return __tree.upper_bound(__x);
-		}
+		iterator upper_bound(const key_type &__x) { return __tree.upper_bound(__x); }
 
 		const_iterator upper_bound(const key_type &__x) const
 		{
@@ -293,7 +236,8 @@ namespace ft
 			return __tree.equal_range(__x);
 		}
 
-		ft::pair<const_iterator, const_iterator> equal_range(const key_type &__x) const
+		ft::pair<const_iterator, const_iterator> equal_range(
+			const key_type &__x) const
 		{
 			return __tree.equal_range(__x);
 		}
@@ -312,7 +256,9 @@ namespace ft
 	bool operator<(const map<_Key, _Tp, _Compare, _Alloc> &__x,
 				   const map<_Key, _Tp, _Compare, _Alloc> &__y)
 	{
-		return __x._M_t < __y._M_t;
+		// return __x.__tree < __y.__tree;
+		return ft::lexicographical_compare(__x.begin(), __x.end(), __y.begin(),
+										   __y.end());
 	}
 
 	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
@@ -345,11 +291,10 @@ namespace ft
 
 	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
 	void swap(map<_Key, _Tp, _Compare, _Alloc> &__x,
-			  map<_Key, _Tp, _Compare, _Alloc> &__y)
-		___NOEXCEPT__
+			  map<_Key, _Tp, _Compare, _Alloc> &__y) ___NOEXCEPT__
 	{
 		__x.swap(__y);
 	}
-}
+} // namespace ft
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/22 17:06:20 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:04:18 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,6 @@
 #include "stack.hpp"
 #include "utility.hpp"
 #include "map.hpp"
-
-// --*-- TESTER --*--
-
-#define T1 char
-#define T2 foo<float>
-typedef TESTED_NAMESPACE::map<T1, T2> _map;
-typedef _map::const_iterator const_it;
 
 using namespace std::chrono;
 // --*-- function implement --*--
@@ -68,35 +61,8 @@ using namespace std::chrono;
 ///
 /// ===========================================================================================================
 
-static unsigned int i = 0;
-
-void ft_comp(const _map &mp, const const_it &it1, const const_it &it2)
-{
-	bool res[2];
-
-	std::cout << "\t-- [" << ++i << "] --" << std::endl;
-	res[0] = mp.key_comp()(it1->first, it2->first);
-	res[1] = mp.value_comp()(*it1, *it2);
-	std::cout << "with [" << it1->first << " and " << it2->first << "]: ";
-	std::cout << "key_comp: " << res[0] << " | "
-			  << "value_comp: " << res[1] << std::endl;
-}
-
 void ft_map_basic_test(void)
 {
-	_map mp;
-
-	mp['a'] = 2.3;
-	mp['b'] = 1.4;
-	mp['c'] = 0.3;
-	mp['d'] = 4.2;
-	printSize(mp);
-
-	for (const_it it1 = mp.begin(); it1 != mp.end(); ++it1)
-		for (const_it it2 = mp.begin(); it2 != mp.end(); ++it2)
-			ft_comp(mp, it1, it2);
-
-	printSize(mp);
 }
 
 void map_stl_test(void)

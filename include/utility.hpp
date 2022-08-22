@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 20:25:24 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 14:28:13 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:04:41 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@ namespace ft
 		// --*-- 2. copy constructor --*--
 		// template<class U, class V> pair (const pair<U,V>& pr);
 		template <typename _U1, typename _U2>
-		pair(const pair<_U1, _U2> &__p) : first(__p.first), second(__p.second)
-		{
-		}
+		pair(const pair<_U1, _U2> &__p) : first(__p.first), second(__p.second) {}
 
 		// --*-- 3. initialization constructor --*--
 		// pair (const first_type& a, const second_type& b);
@@ -66,7 +64,8 @@ namespace ft
 	template <class _T1, class _T2>
 	bool operator<(const pair<_T1, _T2> &__x, const pair<_T1, _T2> &__y)
 	{
-		return __x.first < __y.first || (!(__y.first < __x.first) && __x.second < __y.second);
+		return __x.first < __y.first ||
+			   (!(__y.first < __x.first) && __x.second < __y.second);
 	}
 
 	template <class _T1, class _T2>
@@ -106,16 +105,13 @@ namespace ft
 	template <typename _Pair>
 	struct _Select1st
 	{
-		typename _Pair::first_type &operator()(_Pair &__x) const
-		{
-			return __x.first;
-		}
+		typename _Pair::first_type &operator()(_Pair &__x) const { return __x.first; }
 
 		const typename _Pair::first_type &operator()(const _Pair &__x) const
 		{
 			return __x.first;
 		}
 	};
-}
+} // namespace ft
 
 #endif

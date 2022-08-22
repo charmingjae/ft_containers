@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 17:34:06 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 17:00:08 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:04:45 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,40 +56,46 @@ namespace ft
 	// --*-- Non member function --*--
 
 	template <class _Tp, class _Container>
-	bool operator==(const stack<_Tp, _Container> &__x, const stack<_Tp, _Container> &__y)
+	bool operator==(const stack<_Tp, _Container> &__x,
+					const stack<_Tp, _Container> &__y)
 	{
 		return __x.c == __y.c;
 	}
 
 	template <class _Tp, class _Container>
-	bool operator<(const stack<_Tp, _Container> &__x, const stack<_Tp, _Container> &__y)
+	bool operator<(const stack<_Tp, _Container> &__x,
+				   const stack<_Tp, _Container> &__y)
 	{
 		return __x.c < __y.c;
 	}
 
 	template <class _Tp, class _Container>
-	bool operator!=(const stack<_Tp, _Container> &__x, const stack<_Tp, _Container> &__y)
+	bool operator!=(const stack<_Tp, _Container> &__x,
+					const stack<_Tp, _Container> &__y)
 	{
 		return !(__x == __y);
 	}
 
 	template <class _Tp, class _Container>
-	bool operator>(const stack<_Tp, _Container> &__x, const stack<_Tp, _Container> &__y)
+	bool operator>(const stack<_Tp, _Container> &__x,
+				   const stack<_Tp, _Container> &__y)
 	{
 		return __y < __x;
 	}
 
 	template <class _Tp, class _Container>
-	bool operator>=(const stack<_Tp, _Container> &__x, const stack<_Tp, _Container> &__y)
+	bool operator>=(const stack<_Tp, _Container> &__x,
+					const stack<_Tp, _Container> &__y)
 	{
 		return !(__x < __y);
 	}
 
 	template <class _Tp, class _Container>
-	bool operator<=(const stack<_Tp, _Container> &__x, const stack<_Tp, _Container> &__y)
+	bool operator<=(const stack<_Tp, _Container> &__x,
+					const stack<_Tp, _Container> &__y)
 	{
 		return !(__y < __x);
 	}
-}
+} // namespace ft
 
 #endif

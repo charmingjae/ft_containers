@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 17:28:57 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 13:56:38 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 20:04:02 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ namespace ft
 {
 	// *--*--*--*--*--*--*--*--*--*--*--*--
 	// Increment
-	static _rb_tree_node_base *
-	local_rb_tree_increment(_rb_tree_node_base *__x) throw()
+	static _rb_tree_node_base *local_rb_tree_increment(
+		_rb_tree_node_base *__x) throw()
 	{
 		if (__x->__right != 0)
 		{
@@ -39,14 +39,13 @@ namespace ft
 		return __x;
 	}
 
-	_rb_tree_node_base *
-	_rb_tree_increment(_rb_tree_node_base *__x) ___NOEXCEPT__
+	_rb_tree_node_base *_rb_tree_increment(_rb_tree_node_base *__x) ___NOEXCEPT__
 	{
 		return local_rb_tree_increment(__x);
 	}
 
-	const _rb_tree_node_base *
-	_rb_tree_increment(const _rb_tree_node_base *__x) ___NOEXCEPT__
+	const _rb_tree_node_base *_rb_tree_increment(const _rb_tree_node_base *__x)
+		___NOEXCEPT__
 	{
 		return local_rb_tree_increment(const_cast<_rb_tree_node_base *>(__x));
 	}
@@ -54,8 +53,8 @@ namespace ft
 	// *--*--*--*--*--*--*--*--*--*--*--*--
 	// Decrement
 
-	static _rb_tree_node_base *
-	local_rb_tree_decrement(_rb_tree_node_base *__x) throw()
+	static _rb_tree_node_base *local_rb_tree_decrement(
+		_rb_tree_node_base *__x) throw()
 	{
 		if (__x->__color == COLOR_RED && __x->__parent->__parent == __x)
 			__x = __x->__right;
@@ -79,14 +78,13 @@ namespace ft
 		return __x;
 	}
 
-	_rb_tree_node_base *
-	_rb_tree_decrement(_rb_tree_node_base *__x) throw()
+	_rb_tree_node_base *_rb_tree_decrement(_rb_tree_node_base *__x) throw()
 	{
 		return local_rb_tree_decrement(__x);
 	}
 
-	const _rb_tree_node_base *
-	_rb_tree_decrement(const _rb_tree_node_base *__x) throw()
+	const _rb_tree_node_base *_rb_tree_decrement(
+		const _rb_tree_node_base *__x) throw()
 	{
 		return local_rb_tree_decrement(const_cast<_rb_tree_node_base *>(__x));
 	}
@@ -112,7 +110,8 @@ namespace ft
 		__x->__parent = __y;
 	}
 
-	static void local_rb_tree_rotate_right(_rb_tree_node_base *const __x, _rb_tree_node_base *&__root)
+	static void local_rb_tree_rotate_right(_rb_tree_node_base *const __x,
+										   _rb_tree_node_base *&__root)
 	{
 		_rb_tree_node_base *const __y = __x->__left;
 
@@ -150,8 +149,8 @@ namespace ft
 		__x->__color = COLOR_RED;
 
 		// Insert node
-		// Make new node child of parent and maintain root, leftmost and rightmost nodes
-		// First node is always inserted left
+		// Make new node child of parent and maintain root, leftmost and rightmost
+		// nodes First node is always inserted left
 		if (__insert_left) // Insert left
 		{
 			__p->__left = __x;	  // Set parent's left node as __x
@@ -171,14 +170,18 @@ namespace ft
 		}
 
 		// Rebalance
-		while (__x != __root && __x->__parent->__color == COLOR_RED) // While error-case exist
+		while (__x != __root &&
+			   __x->__parent->__color == COLOR_RED) // While error-case exist
 		{
 			_rb_tree_node_base *const __xpp = __x->__parent->__parent; // Grandparent
 
-			if (__x->__parent == __xpp->__left) // if grandparent's left node is new node's parent
+			if (__x->__parent ==
+				__xpp->__left) // if grandparent's left node is new node's parent
 			{
-				_rb_tree_node_base *const __uncle = __xpp->__right; // uncle is parent's sibling and __x's uncle
-				if (__uncle && __uncle->__color == COLOR_RED)		// Uncle color and new node color is red
+				_rb_tree_node_base *const __uncle =
+					__xpp->__right; // uncle is parent's sibling and __x's uncle
+				if (__uncle && __uncle->__color ==
+								   COLOR_RED) // Uncle color and new node color is red
 				{
 					__x->__parent->__color = COLOR_BLACK; // Change parent color
 					__uncle->__color = COLOR_BLACK;		  // Change uncle color
@@ -187,7 +190,8 @@ namespace ft
 				}
 				else // Uncle not exist or Uncle color is Black
 				{
-					if (__x == __x->__parent->__right) // if new node is right child node of parent
+					if (__x == __x->__parent
+								   ->__right) // if new node is right child node of parent
 					{
 						__x = __x->__parent;
 						local_rb_tree_rotate_left(__x, __root);
@@ -197,7 +201,8 @@ namespace ft
 					local_rb_tree_rotate_right(__xpp, __root);
 				}
 			}
-			else // __x->__parent != __xpp->__left __x->__parent might be right of xpp
+			else // __x->__parent != __xpp->__left __x->__parent might be right of
+				 // xpp
 			{
 				_rb_tree_node_base *const __uncle = __xpp->__left;
 				if (__uncle && __uncle->__color == COLOR_RED)
@@ -227,8 +232,8 @@ namespace ft
 	// Erase and rebalance
 	// ==================================================================================================
 
-	_rb_tree_node_base *_rb_tree_rebalance_for_erase(_rb_tree_node_base *const __z,
-													 _rb_tree_node_base &__header) ___NOEXCEPT__
+	_rb_tree_node_base *_rb_tree_rebalance_for_erase(
+		_rb_tree_node_base *const __z, _rb_tree_node_base &__header) ___NOEXCEPT__
 	{
 		_rb_tree_node_base *&__root = __header.__parent;
 		_rb_tree_node_base *&__leftmost = __header.__left;
@@ -260,9 +265,11 @@ namespace ft
 			// __y is z's successor
 			__z->__left->__parent = __y; // Link z's left node to __y
 			__y->__left = __z->__left;	 // Link y's left node with z's left node
-			if (__y != __z->__right)	 // if __y->__right(__z->__right) node has more left child node
+			if (__y != __z->__right)	 // if __y->__right(__z->__right) node has more
+										 // left child node
 			{
-				__x_parent = __y->__parent; // __z의 right sub-tree의 leftmost = y. y의 parent = __x_parent
+				__x_parent = __y->__parent; // __z의 right sub-tree의 leftmost = y. y의
+											// parent = __x_parent
 				if (__x)					// if __x is not nil
 					__x->__parent = __y->__parent;
 				__y->__parent->__left = __x; // __y must be a child of __left
@@ -310,9 +317,11 @@ namespace ft
 		} // End of relink
 		// Adjustment
 		// Now __y point __z actually will be deleted
-		if (__y->__color != COLOR_RED) // if y's(__z) color is Black, it will destroy the nature of the red-black tree
+		if (__y->__color != COLOR_RED) // if y's(__z) color is Black, it will destroy
+									   // the nature of the red-black tree
 		{
-			while (__x != __root && (__x == 0 || __x->__color == COLOR_BLACK)) // When x is not nil
+			while (__x != __root &&
+				   (__x == 0 || __x->__color == COLOR_BLACK)) // When x is not nil
 			{
 				if (__x == __x_parent->__left) // x is left child node
 				{
@@ -324,10 +333,12 @@ namespace ft
 						__w->__color = COLOR_BLACK;		 // RED - BLACK - BLACK case
 						__x_parent->__color = COLOR_RED; // parent's color to RED
 						local_rb_tree_rotate_left(__x_parent, __root);
-						__w = __x_parent->__right; // Now, __x_parent's left node is double-black
+						__w = __x_parent
+								  ->__right; // Now, __x_parent's left node is double-black
 					}
 					if ((__w->__left == 0 || __w->__left->__color == COLOR_BLACK) &&
-						(__w->__right == 0 || __w->__right->__color == COLOR_BLACK)) // Case 1-1 ALL BLACK
+						(__w->__right == 0 ||
+						 __w->__right->__color == COLOR_BLACK)) // Case 1-1 ALL BLACK
 					{
 						__w->__color = COLOR_RED; // sibling's color to RED
 						__x = __x_parent;
@@ -390,4 +401,4 @@ namespace ft
 		}
 		return __y;
 	}
-}
+} // namespace ft
