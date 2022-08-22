@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 16:50:55 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 20:04:48 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 21:28:14 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,16 +237,28 @@ namespace ft
 			return __tmp;
 		}
 
-		friend bool operator==(const _self &__x, const _self &__y) ___NOEXCEPT__
-		{
-			return __x.__node == __y.__node;
-		}
+		// friend bool operator==(const _self &__x, const _self &__y) ___NOEXCEPT__
+		// {
+		// 	return __x.__node == __y.__node;
+		// }
 
-		friend bool operator!=(const _self &__x, const _self &__y) ___NOEXCEPT__
-		{
-			return __x.__node != __y.__node;
-		}
+		// friend bool operator!=(const _self &__x, const _self &__y) ___NOEXCEPT__
+		// {
+		// 	return __x.__node != __y.__node;
+		// }
 	}; // End of _rb_tree_iterator
+
+	template <typename _Tp>
+	bool operator==(const _rb_tree_iterator<_Tp> &__x, const _rb_tree_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return __x.__node == __y.__node;
+	}
+
+	template <typename _Tp>
+	bool operator!=(const _rb_tree_iterator<_Tp> &__x, const _rb_tree_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return __x.__node != __y.__node;
+	}
 
 	template <typename _Tp>
 	struct _rb_tree_const_iterator
@@ -319,18 +331,54 @@ namespace ft
 			return __tmp;
 		}
 
-		friend bool operator==(const _self_const &__x,
-							   const _self_const &__y) ___NOEXCEPT__
-		{
-			return __x.__node == __y.__node;
-		}
+		// friend bool operator==(const _self_const &__x,
+		// 					   const _self_const &__y) ___NOEXCEPT__
+		// {
+		// 	return __x.__node == __y.__node;
+		// }
 
-		friend bool operator!=(const _self_const &__x,
-							   const _self_const &__y) ___NOEXCEPT__
-		{
-			return __x.__node != __y.__node;
-		}
+		// friend bool operator!=(const _self_const &__x,
+		// 					   const _self_const &__y) ___NOEXCEPT__
+		// {
+		// 	return __x.__node != __y.__node;
+		// }
 	}; // End of _rb_tree_const_iterator
+
+	template <typename _Tp>
+	bool operator==(const _rb_tree_const_iterator<_Tp> &__x, const _rb_tree_const_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return __x.__node == __y.__node;
+	}
+
+	template <typename _Tp>
+	bool operator==(const _rb_tree_const_iterator<_Tp> &__x, const _rb_tree_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return __x.__node == __y.__node;
+	}
+
+	template <typename _Tp>
+	bool operator==(const _rb_tree_iterator<_Tp> &__x, const _rb_tree_const_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return __x.__node == __y.__node;
+	}
+
+	template <typename _Tp>
+	bool operator!=(const _rb_tree_const_iterator<_Tp> &__x, const _rb_tree_const_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return !(__x.__node == __y.__node);
+	}
+
+	template <typename _Tp>
+	bool operator!=(const _rb_tree_const_iterator<_Tp> &__x, const _rb_tree_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return !(__x.__node == __y.__node);
+	}
+
+	template <typename _Tp>
+	bool operator!=(const _rb_tree_iterator<_Tp> &__x, const _rb_tree_const_iterator<_Tp> &__y) ___NOEXCEPT__
+	{
+		return !(__x.__node == __y.__node);
+	}
 
 	// *==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*
 	// Red - Black tree

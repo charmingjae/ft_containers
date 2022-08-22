@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 19:55:35 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 20:04:49 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 21:19:39 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ namespace ft
 		class value_compare
 			: public std::binary_function<value_type, value_type, bool>
 		{
-			friend class map<_Key, _Tp, _Compare, _Alloc>;
+			friend class map<_Key, _Tp, _Compare, _Alloc>; // To use protected member function
 
 		protected:
 			_Compare comp;
