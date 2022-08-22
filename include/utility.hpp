@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/11 20:25:24 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/17 20:25:29 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 14:28:13 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ namespace ft
 
 		// --*-- 2. copy constructor --*--
 		// template<class U, class V> pair (const pair<U,V>& pr);
-		template <class _U1, class _U2>
+		template <typename _U1, typename _U2>
 		pair(const pair<_U1, _U2> &__p) : first(__p.first), second(__p.second)
 		{
 		}

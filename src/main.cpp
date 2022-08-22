@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/15 16:24:23 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 17:06:20 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,14 @@
 #include "vector.hpp"
 #include "stack.hpp"
 #include "utility.hpp"
+#include "map.hpp"
+
+// --*-- TESTER --*--
+
+#define T1 char
+#define T2 foo<float>
+typedef TESTED_NAMESPACE::map<T1, T2> _map;
+typedef _map::const_iterator const_it;
 
 using namespace std::chrono;
 // --*-- function implement --*--
@@ -35,30 +43,70 @@ using namespace std::chrono;
 // *
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--
 
-void stl_map_basic_test(void)
+// void stl_map_basic_test(void)
+// {
+// 	std::map<std::string, int> a;
+// 	a.insert(std::pair<std::string, int>("mcha", 1));	  // mcha
+// 	a.insert(std::pair<std::string, int>("yongjule", 1)); // mchas
+// 	a.insert(std::pair<std::string, int>("ghan", 1));	  // mcha
+// 	a.insert(std::pair<std::string, int>("jiskim", 1));	  // mchas
+
+// 	for (std::map<std::string, int>::iterator it = a.begin(); it != a.end(); it++)
+// 	{
+// 		std::cout << it->first << " " << it->second << std::endl;
+// 	}
+
+// 	std::cout << std::endl;
+// 	std::cout << "Begin : " << a.begin()->first << " " << a.begin()->second << std::endl;
+// 	std::cout << "End : " << (--a.end())->first << " " << (--a.end())->second << std::endl;
+// 	std::cout << "Cnt : " << a.count("mcha") << std::endl;
+// 	std::cout << "Cnt : " << a.count("mchad") << std::endl;
+// 	std::cout << "Size : " << a.size() << std::endl;
+// }
+
+/// ===========================================================================================================
+///
+/// ===========================================================================================================
+
+static unsigned int i = 0;
+
+void ft_comp(const _map &mp, const const_it &it1, const const_it &it2)
 {
-	std::map<std::string, int> a;
-	a.insert(std::pair<std::string, int>("mcha", 1));	  // mcha
-	a.insert(std::pair<std::string, int>("yongjule", 1)); // mchas
-	a.insert(std::pair<std::string, int>("ghan", 1));	  // mcha
-	a.insert(std::pair<std::string, int>("jiskim", 1));	  // mchas
+	bool res[2];
 
-	for (std::map<std::string, int>::iterator it = a.begin(); it != a.end(); it++)
-	{
-		std::cout << it->first << " " << it->second << std::endl;
-	}
+	std::cout << "\t-- [" << ++i << "] --" << std::endl;
+	res[0] = mp.key_comp()(it1->first, it2->first);
+	res[1] = mp.value_comp()(*it1, *it2);
+	std::cout << "with [" << it1->first << " and " << it2->first << "]: ";
+	std::cout << "key_comp: " << res[0] << " | "
+			  << "value_comp: " << res[1] << std::endl;
+}
 
-	std::cout << std::endl;
-	std::cout << "Begin : " << a.begin()->first << " " << a.begin()->second << std::endl;
-	std::cout << "End : " << (--a.end())->first << " " << (--a.end())->second << std::endl;
-	std::cout << "Cnt : " << a.count("mcha") << std::endl;
-	std::cout << "Cnt : " << a.count("mchad") << std::endl;
-	std::cout << "Size : " << a.size() << std::endl;
+void ft_map_basic_test(void)
+{
+	_map mp;
+
+	mp['a'] = 2.3;
+	mp['b'] = 1.4;
+	mp['c'] = 0.3;
+	mp['d'] = 4.2;
+	printSize(mp);
+
+	for (const_it it1 = mp.begin(); it1 != mp.end(); ++it1)
+		for (const_it it2 = mp.begin(); it2 != mp.end(); ++it2)
+			ft_comp(mp, it1, it2);
+
+	printSize(mp);
 }
 
 void map_stl_test(void)
 {
-	stl_map_basic_test();
+	// stl_map_basic_test();
+}
+
+void map_ft_test(void)
+{
+	ft_map_basic_test();
 }
 
 // --*--*--*--*--*--*--*--*--*--*--*--*--*--
@@ -650,7 +698,7 @@ void test(void)
 	// *
 	// --*--*--*--*--*--*--*--*--*--*--*--*--*--
 	// *
-
+	map_ft_test();
 	// ft_clear_test();
 	// ft_swap_test();
 	// ft_erase_test();

@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 19:55:35 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/18 01:06:02 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/22 17:02:27 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,12 @@
 
 // *--*--*--*--*--*--*--*--*--*--*
 // Define
+#define ___NOEXCEPT__ throw()
 
 // *--*--*--*--*--*--*--*--*--*--*
 // Include
+#include "algorithm.hpp"
+#include "iterator"
 #include "rbtree.hpp"
 #include "utility.hpp"
 #include <stdexcept>
@@ -78,93 +81,93 @@ namespace ft
 	public:
 		// *==*==*==*==*==*==*==*==*==*==*==
 		// Constructor
-		map() : __base() {}
+		map() : __tree() {}
 
 		// __comp: A comparison object
 		// __a: An allocator object
 		explicit map(const _Compare &__comp, const allocator_type &__a = allocator_type())
-			: __base(__comp, __a) {}
+			: __tree(__comp, __a) {}
 
 		// Map copy constructor
-		map(const map &__x) : __base(__x.__tree) {}
+		map(const map &__x) : __tree(__x.__tree) {}
 
 		template <typename _InputIterator>
-		map(_InputIterator __first, _InputIterator __last) : __base()
+		map(_InputIterator __first, _InputIterator __last) : __tree()
 		{
-			__base.__insert_range_unique(__first, __last);
+			__tree.__insert_range_unique(__first, __last);
 		}
 
 		template <typename _InputIterator>
 		map(_InputIterator __first, _InputIterator __last, const _Compare &__comp, const allocator_type &__a = allocator_type())
-			: __base(__comp, __a)
+			: __tree(__comp, __a)
 		{
-			__base.__insert_range_unique(__first, __last);
+			__tree.__insert_range_unique(__first, __last);
 		}
 
 		map &operator=(const map &__x)
 		{
-			__base = __x.__base;
+			__tree = __x.__tree;
 			return *this;
 		}
 
 		allocator_type get_allocator() const ___NOEXCEPT__
 		{
-			return allocator_type(__base.get_allocator());
+			return allocator_type(__tree.get_allocator());
 		}
 
 		iterator begin() ___NOEXCEPT__
 		{
-			return __base.begin();
+			return __tree.begin();
 		}
 
 		const_iterator begin() const ___NOEXCEPT__
 		{
-			return __base.begin();
+			return __tree.begin();
 		}
 
 		iterator end() ___NOEXCEPT__
 		{
-			return __base.end();
+			return __tree.end();
 		}
 
 		const_iterator end() const ___NOEXCEPT__
 		{
-			return __base.end();
+			return __tree.end();
 		}
 
 		reverse_iterator rbegin() ___NOEXCEPT__
 		{
-			return __base.rbegin();
+			return __tree.rbegin();
 		}
 
 		const_reverse_iterator rbegin() const ___NOEXCEPT__
 		{
-			return __base.rbegin();
+			return __tree.rbegin();
 		}
 
 		reverse_iterator rend() ___NOEXCEPT__
 		{
-			return __base.rend();
+			return __tree.rend();
 		}
 
 		const_reverse_iterator rend() const ___NOEXCEPT__
 		{
-			return __base.rend();
+			return __tree.rend();
 		}
 
 		bool empty() const ___NOEXCEPT__
 		{
-			return __base.empty();
+			return __tree.empty();
 		}
 
 		size_type size() const ___NOEXCEPT__
 		{
-			return __base.size();
+			return __tree.size();
 		}
 
 		size_type max_size() const ___NOEXCEPT__
 		{
-			return __base.max_size();
+			return __tree.max_size();
 		}
 
 		mapped_type &operator[](const key_type &__k)
@@ -178,7 +181,7 @@ namespace ft
 
 		void __throw_out_of_range(const char *msg)
 		{
-			throw std::out_of_range(__msg);
+			throw std::out_of_range(msg);
 		}
 
 		mapped_type &at(const key_type &__k)
@@ -197,11 +200,156 @@ namespace ft
 			return (*__i).second;
 		}
 
+		// map insert
 		ft::pair<iterator, bool> insert(const value_type &__x)
 		{
-			return __base.__insert_unique(__x); // Implementation needed
+			return __tree.__insert_unique(__x); // Implementation needed
+		}
+
+		iterator insert(iterator __position, const value_type &__x)
+		{
+			return __tree.__insert_unique_hint_pos(__position, __x); // use hint
+		}
+
+		template <typename _InputIterator>
+		void insert(_InputIterator __first, _InputIterator __last)
+		{
+			__tree.__insert_range_unique(__first, __last);
+		}
+
+		// map erase
+		void erase(iterator __position)
+		{
+			__tree.erase(__position);
+		}
+
+		size_type erase(const key_type &__x)
+		{
+			return __tree.erase(__x);
+		}
+
+		void erase(iterator __first, iterator __last)
+		{
+			__tree.erase(__first, __last);
+		}
+
+		void swap(map &__x) ___NOEXCEPT__
+		{
+			__tree.swap(__x.__tree);
+		}
+
+		void clear() ___NOEXCEPT__
+		{
+			__tree.clear();
+		}
+
+		key_compare key_comp() const
+		{
+			return __tree.key_comp();
+		}
+
+		value_compare value_comp() const
+		{
+			return value_compare(__tree.key_comp());
+		}
+
+		iterator find(const key_type &__x)
+		{
+			return __tree.find(__x);
+		}
+
+		const_iterator find(const key_type &__x) const
+		{
+			return __tree.find(__x);
+		}
+
+		size_type count(const key_type &__x) const
+		{
+			return __tree.find(__x) == __tree.end() ? 0 : 1;
+		}
+
+		iterator lower_bound(const key_type &__x)
+		{
+			return __tree.lower_bound(__x);
+		}
+
+		const_iterator lower_bound(const key_type &__x) const
+		{
+			return __tree.lower_bound(__x);
+		}
+
+		iterator upper_bound(const key_type &__x)
+		{
+			return __tree.upper_bound(__x);
+		}
+
+		const_iterator upper_bound(const key_type &__x) const
+		{
+			return __tree.upper_bound(__x);
+		}
+
+		ft::pair<iterator, iterator> equal_range(const key_type &__x)
+		{
+			return __tree.equal_range(__x);
+		}
+
+		ft::pair<const_iterator, const_iterator> equal_range(const key_type &__x) const
+		{
+			return __tree.equal_range(__x);
 		}
 	};
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	bool operator==(const ft::map<_Key, _Tp, _Compare, _Alloc> &__x,
+					const ft::map<_Key, _Tp, _Compare, _Alloc> &__y)
+	{
+		// return __x._M_t == __y._M_t;
+		return (__x.size() == __y.size() &&
+				ft::equal(__x.begin(), __x.end(), __y.begin()));
+	}
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	bool operator<(const map<_Key, _Tp, _Compare, _Alloc> &__x,
+				   const map<_Key, _Tp, _Compare, _Alloc> &__y)
+	{
+		return __x._M_t < __y._M_t;
+	}
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	bool operator!=(const map<_Key, _Tp, _Compare, _Alloc> &__x,
+					const map<_Key, _Tp, _Compare, _Alloc> &__y)
+	{
+		return !(__x == __y);
+	}
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	bool operator>(const map<_Key, _Tp, _Compare, _Alloc> &__x,
+				   const map<_Key, _Tp, _Compare, _Alloc> &__y)
+	{
+		return __y < __x;
+	}
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	bool operator<=(const map<_Key, _Tp, _Compare, _Alloc> &__x,
+					const map<_Key, _Tp, _Compare, _Alloc> &__y)
+	{
+		return !(__y < __x);
+	}
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	bool operator>=(const map<_Key, _Tp, _Compare, _Alloc> &__x,
+					const map<_Key, _Tp, _Compare, _Alloc> &__y)
+	{
+		return !(__x < __y);
+	}
+
+	template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
+	void swap(map<_Key, _Tp, _Compare, _Alloc> &__x,
+			  map<_Key, _Tp, _Compare, _Alloc> &__y)
+		___NOEXCEPT__
+	{
+		__x.swap(__y);
+	}
 }
 
 #endif
