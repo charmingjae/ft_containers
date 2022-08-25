@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 19:55:35 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/22 21:38:46 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/25 17:33:13 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,9 @@ namespace ft
 	private:
 		__base __tree; // The actual tree structure
 
+	protected:
+		void __throw_out_of_range(const char *msg) { throw std::out_of_range(msg); }
+
 	public:
 		// *==*==*==*==*==*==*==*==*==*==*==
 		// Constructor
@@ -155,8 +158,6 @@ namespace ft
 				__i = insert(__i, value_type(__k, mapped_type()));
 			return (*__i).second; // node's value
 		}
-
-		void __throw_out_of_range(const char *msg) { throw std::out_of_range(msg); }
 
 		mapped_type &at(const key_type &__k)
 		{

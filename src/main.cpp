@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2022/08/23 15:53:09 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/24 14:58:55 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <iterator>
 #include <string>
 #include <iostream>
+#include <type_traits>
 
 // --*-- FT --*--
 #include "iterator.hpp"
@@ -620,11 +621,12 @@ void ft_clear_test(void)
 }
 
 // --*-- main --*--
+#include <fstream>
 
 void test(void)
 {
 	// --*-- SINGLE TEST --*--
-	map_stl_test();
+	// map_stl_test();
 	// -- time --
 	system_clock::time_point start_time = system_clock::now();
 	// --*--*--*--*--*--*--*--*--*--*--*--*--*--
@@ -665,7 +667,7 @@ void test(void)
 	// *
 	// --*--*--*--*--*--*--*--*--*--*--*--*--*--
 	// *
-	map_ft_test();
+	// map_ft_test();
 	// ft_clear_test();
 	// ft_swap_test();
 	// ft_erase_test();

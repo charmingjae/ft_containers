@@ -6,7 +6,7 @@
 /*   By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/15 17:28:57 by mcha              #+#    #+#             */
-/*   Updated: 2022/08/23 15:52:11 by mcha             ###   ########.fr       */
+/*   Updated: 2022/08/24 22:03:25 by mcha             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ namespace ft
 			else if (__p == __header.__left) // Set new leftmost
 				__header.__left = __x;
 		}
-		else // Tree is not empty
+		else // Tree is not empty or insert right
 		{
 			__p->__right = __x;
 			if (__p == __header.__right) // Set new rightmost
@@ -201,7 +201,7 @@ namespace ft
 					local_rb_tree_rotate_right(__xpp, __root);
 				}
 			}
-			else // __x->__parent != __xpp->__left __x->__parent might be right of
+			else // __x->__parent != __xpp->__left, __x->__parent might be right of
 				 // xpp
 			{
 				_rb_tree_node_base *const __uncle = __xpp->__left;
@@ -235,6 +235,8 @@ namespace ft
 	_rb_tree_node_base *_rb_tree_rebalance_for_erase(
 		_rb_tree_node_base *const __z, _rb_tree_node_base &__header) ___NOEXCEPT__
 	{
+		// __z : Might be deleted node
+		// __header : info node
 		_rb_tree_node_base *&__root = __header.__parent;
 		_rb_tree_node_base *&__leftmost = __header.__left;
 		_rb_tree_node_base *&__rightmost = __header.__right;
@@ -248,7 +250,7 @@ namespace ft
 			__x = __y->__right;		// __x might be null.
 		else if (__y->__right == 0) // __z has exactly one non-null child.
 			__x = __y->__left;		// __x is not null.
-		else
+		else						// if __y has two non-null child.
 		{
 			// __z has two non-null child. set __y to __z's successor. __x might be null
 			__y = __y->__right;		 // Find substitution node in right sub-tree
@@ -288,7 +290,7 @@ namespace ft
 			ft::swap(__y->__color, __z->__color); // swap color
 			__y = __z;							  // __y pointing to be actually deleted node
 		}
-		else // __y == __z -> __z has no non-null child
+		else // __y == __z -> __z has no non-null child __z가 자식 노드를 갖고있지 않음.
 		{
 			// Simplification
 			__x_parent = __y->__parent;
