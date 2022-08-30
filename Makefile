@@ -6,7 +6,7 @@
 #    By: mcha <mcha@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/26 13:55:55 by mcha              #+#    #+#              #
-#    Updated: 2022/08/25 17:35:15 by mcha             ###   ########.fr        #
+#    Updated: 2022/08/31 01:06:40 by mcha             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,8 +25,10 @@ INC_DIR				=	./include/
 SRC_DIR				=	./src/
 
 # Source
+
+
 SRC					= $(addprefix $(SRC_DIR), \
-											main.cpp \
+											test.cpp \
 											rbtree.cpp \
 											)
 
@@ -57,8 +59,9 @@ re					:
 debug				:
 					@make DEBUG=1
 					@echo "[-] DEBUG PROCESS"
-llvm				:
-					@make LLVM=1
-					@echo "[-] LLVM STL"
 
-.PHONY 				: all clean fclean re debug llvm
+real				:
+					@make REAL=1
+					@echo "[-] REAL STL"
+
+.PHONY 				: all clean fclean re debug real
